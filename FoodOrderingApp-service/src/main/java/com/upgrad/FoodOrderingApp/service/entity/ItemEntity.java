@@ -29,7 +29,6 @@ public class ItemEntity implements Serializable {
     private Integer price;
 
     @Column(name = "TYPE")
-    @Size(max = 10)
     @NotNull
     private ItemType type;
 
