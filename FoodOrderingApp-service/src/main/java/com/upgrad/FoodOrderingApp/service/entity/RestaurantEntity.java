@@ -66,8 +66,6 @@ public class RestaurantEntity implements Serializable {
     @OneToMany(mappedBy="restaurant")
     private List<RestaurantItemEntity> restaurantItems;
 
-    public RestuarantEntity() {
-    }
 
     public static long getSerialVersionUID() {
         return serialVersionUID;

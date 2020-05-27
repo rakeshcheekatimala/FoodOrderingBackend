@@ -32,7 +32,7 @@ public class AddressEntity {
     @Size(max = 30)
     private String pincode;
 
-    @ManyToOne(fetch=FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "state_id")
     private StateEntity state;
 

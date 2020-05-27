@@ -61,8 +61,5 @@ public class CouponEntity implements Serializable {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        return new EqualsBuilder<Long>().equalsById(this, obj);
-    }
+
 }
