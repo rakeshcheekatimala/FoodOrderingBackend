@@ -50,7 +50,7 @@ public class CategoryController {
             throw new CategoryNotFoundException("CNF-001","Category id field should not be empty");
         }
 
-        CategoryEntity category = categoryService.getCategoryById(category_id);
+        CategoryEntity category = categoryService.getCategoryByUuid(category_id);
 
         if(category == null){
             throw new CategoryNotFoundException("CNF-002", "No category by this id");
