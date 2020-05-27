@@ -7,6 +7,9 @@ import java.util.List;
 
 @Entity
 @Table(name = "category")
+@NamedQueries({
+        @NamedQuery(name = "CategoryEntity.byAll", query = "SELECT g FROM CategoryEntity g order by g.categoryName")
+})
 public class CategoryEntity implements Serializable {
     @Id
     @Column(name = "ID")
@@ -16,6 +19,17 @@ public class CategoryEntity implements Serializable {
     @Column(name = "UUID")
     @Size(max = 200)
     private String uuid;
+
+    @Column(name = "CATEGORY_NAME")
+    private String categoryName;
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
 
     @OneToMany(mappedBy="category")
     private List<CategoryItemEntity> categoryItems;
