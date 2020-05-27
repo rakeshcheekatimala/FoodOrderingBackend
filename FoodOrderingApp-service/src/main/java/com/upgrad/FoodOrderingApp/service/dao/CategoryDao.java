@@ -13,10 +13,20 @@ public class CategoryDao {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public List<CategoryEntity> getAllCategories(){
+
+    public CategoryEntity getCategoryByUuid(String uuid){
         try {
-            return entityManager.createNamedQuery("CategoryEntity.byAll", CategoryEntity.class).getResultList();
-        } catch(NoResultException nre) {
+            return entityManager.createNamedQuery("CategoryEntity.byUUid", CategoryEntity.class).setParameter(uuid,uuid).getSingleResult();
+        } catch(NoResultException e) {
+            return null;
+        }
+    }
+
+    public List<CategoryEntity> getAllCategoriesOrderedByName(){
+        try {
+            List<CategoryEntity> categoryEntities = entityManager.createNamedQuery("CategoryEntity.getAllCategoriesOrderedByName",CategoryEntity.class).getResultList();
+            return categoryEntities;
+        }catch (NoResultException e){
             return null;
         }
     }
