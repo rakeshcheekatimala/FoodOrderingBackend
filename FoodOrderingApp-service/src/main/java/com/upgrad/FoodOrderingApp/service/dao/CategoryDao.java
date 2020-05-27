@@ -16,7 +16,7 @@ public class CategoryDao {
 
     public CategoryEntity getCategoryByUuid(String uuid){
         try {
-            return entityManager.createNamedQuery("CategoryEntity.byUUid", CategoryEntity.class).setParameter(uuid,uuid).getSingleResult();
+            return entityManager.createNamedQuery("CategoryEntity.byUUid", CategoryEntity.class).setParameter("uuid",uuid).getSingleResult();
         } catch(NoResultException e) {
             return null;
         }
@@ -30,5 +30,6 @@ public class CategoryDao {
             return null;
         }
     }
+
 
 }
