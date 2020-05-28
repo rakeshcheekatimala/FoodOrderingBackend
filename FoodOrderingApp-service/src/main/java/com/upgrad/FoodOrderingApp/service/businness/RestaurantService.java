@@ -12,8 +12,11 @@ public class RestaurantService {
     @Autowired
     RestaurantDao restaurantDao;
 
-    public List<RestaurantEntity> getAllResturants(){
-        return restaurantDao.getAllResturants();
+    public List<RestaurantEntity> getAllRestaurants(){
+        return restaurantDao.getAllRestaurants();
     }
 
+    public List<RestaurantEntity> restaurantsByName(String restaurantName) {
+        return restaurantDao.getRestaurantsByName(restaurantName);
+    }
 }

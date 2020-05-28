@@ -14,12 +14,22 @@ public class RestaurantDao {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public List<RestaurantEntity> getAllResturants(){
+    public List<RestaurantEntity> getAllRestaurants(){
         try {
             List<RestaurantEntity> restaurantEntities = entityManager.createNamedQuery("RestaurantEntity.findAll",RestaurantEntity.class).getResultList();
             return restaurantEntities;
         }catch (NoResultException e){
             return null;
         }
+    }
+
+    public List<RestaurantEntity> getRestaurantsByName(String restaurantName) {
+        try {
+            List<RestaurantEntity> restaurantEntities = entityManager.createNamedQuery("RestaurantEntity.findByName", RestaurantEntity.class).setParameter("restaurantName","%" + restaurantName.toLowerCase() + "%").getResultList();
+            return restaurantEntities;
+        }catch (NoResultException nre){
+            return null;
+        }
+
     }
 }

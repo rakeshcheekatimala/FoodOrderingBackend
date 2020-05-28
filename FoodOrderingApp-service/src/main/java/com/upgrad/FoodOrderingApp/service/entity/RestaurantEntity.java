@@ -11,7 +11,9 @@ import java.util.List;
 @Table(name="restaurant")
 @NamedQueries(
         {
-                @NamedQuery(name = "RestaurantEntity.findAll", query = "select r from RestaurantEntity r order by r.customerRating desc")
+                @NamedQuery(name = "RestaurantEntity.findAll", query = "select r from RestaurantEntity r order by r.customerRating desc"),
+                @NamedQuery(name = "RestaurantEntity.findByName", query = "select r from RestaurantEntity  r where  lower(r.restaurantName) like CONCAT(:restaurantName,'%')")
+
         }
 )
 
@@ -23,12 +25,12 @@ public class RestaurantEntity implements Serializable {
     @Column(unique=true, nullable=false)
     private long id;
 
-    @Column(name="AVERAGE_PRICE_FOR_TWO", precision=10, scale=2)
-    private BigDecimal averagePriceForTwo;
+    @Column(name="AVERAGE_PRICE_FOR_TWO")
+    private Integer averagePriceForTwo;
 
     @Column(name = "CUSTOMER_RATING")
     @NotNull
-    private int customerRating;
+    private BigDecimal customerRating;
 
     @Column(name = "NUMBER_OF_CUSTOMERS_RATED")
     @NotNull
@@ -79,19 +81,19 @@ public class RestaurantEntity implements Serializable {
         this.id = id;
     }
 
-    public BigDecimal getAveragePriceForTwo() {
+    public Integer getAveragePriceForTwo() {
         return averagePriceForTwo;
     }
 
-    public void setAveragePriceForTwo(BigDecimal averagePriceForTwo) {
+    public void setAveragePriceForTwo(Integer averagePriceForTwo) {
         this.averagePriceForTwo = averagePriceForTwo;
     }
 
-    public int getCustomerRating() {
+    public BigDecimal getCustomerRating() {
         return customerRating;
     }
 
-    public void setCustomerRating(int customerRating) {
+    public void setCustomerRating(BigDecimal customerRating) {
         this.customerRating = customerRating;
     }
 
