@@ -54,12 +54,12 @@ public class RestaurantEntity implements Serializable {
     private List<OrdersEntity> orders;
 
     //bi-directional many-to-one association to Address
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="address_id")
     private AddressEntity address;
 
     //bi-directional many-to-one association to RestaurantCategory
-    @OneToMany(mappedBy="restaurant")
+    @OneToMany(mappedBy="restaurant",fetch = FetchType.EAGER)
     private List<RestaurantCategoryEntity> restaurantCategories;
 
     //bi-directional many-to-one association to RestaurantItem
