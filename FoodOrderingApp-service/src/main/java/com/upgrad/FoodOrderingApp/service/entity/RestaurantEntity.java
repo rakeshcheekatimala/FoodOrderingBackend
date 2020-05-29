@@ -29,7 +29,7 @@ public class RestaurantEntity implements Serializable {
     @Column(name="AVERAGE_PRICE_FOR_TWO")
     private Integer averagePriceForTwo;
 
-    @Column(name = "CUSTOMER_RATING")
+    @Column(name = "CUSTOMER_RATING",scale = 2)
     @NotNull
     private BigDecimal customerRating;
 
