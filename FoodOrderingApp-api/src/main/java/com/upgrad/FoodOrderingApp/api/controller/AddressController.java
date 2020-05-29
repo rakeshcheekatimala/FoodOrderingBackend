@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -58,6 +59,25 @@ public class AddressController {
         SaveAddressResponse saveAddressResponse = new SaveAddressResponse().id(createdEntity.getUuid())
                 .status("ADDRESS SUCCESSFULLY REGISTERED");
         return new ResponseEntity<SaveAddressResponse>(saveAddressResponse, HttpStatus.OK);
+    }
+
+    @RequestMapping(method = RequestMethod.DELETE, path = "/address/{address_id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE,consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<DeleteAddressResponse> deleteAddress(@PathVariable String address_id) throws AddressNotFoundException{
+        // Calls the getAllStates from addressService to get the list of stateEntity
+        if(StringUtils.isEmpty(address_id)){
+            throw new AddressNotFoundException("ANF-005","Address id can not be empty");
+        }
+        AddressEntity addressEntity = addressService.getAddressByUUID(address_id);
+
+        if (addressEntity == null) {
+            throw new AddressNotFoundException("ANF-003", "No address by this id.");
+        }
+        
+        AddressEntity deletedEntity = addressService.deleteAddress(addressEntity);
+        DeleteAddressResponse deleteAddressResponse = new DeleteAddressResponse().id(UUID.fromString(deletedEntity.getUuid()))
+                .status("ADDRESS DELETED SUCCESSFULLY");
+
+        return  new ResponseEntity<DeleteAddressResponse>(deleteAddressResponse, HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/states", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
