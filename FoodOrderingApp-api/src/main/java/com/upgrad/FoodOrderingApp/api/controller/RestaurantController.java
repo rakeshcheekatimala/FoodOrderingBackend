@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.*;
 
 @RestController
@@ -58,9 +59,11 @@ public class RestaurantController {
         }
         // get the categoryEntity by using the category_id received in the request param
         CategoryEntity categoryEntity = categoryService.getCategoryByUuid(category_id);
+
         if(categoryEntity == null){
             throw new CategoryNotFoundException("CNF-002", "No category by this id");
         }
+
         final List<RestaurantCategoryEntity>  categoryEntities= restaurantService.restaurantByCategory(categoryEntity.getId());
 
         List<RestaurantEntity> restaurantEntityList = new LinkedList<>();
@@ -82,6 +85,10 @@ public class RestaurantController {
 
         final RestaurantEntity  restaurantEntity= restaurantService.restaurantByUUID(restaurant_id);
 
+        if(restaurantEntity==null) {
+            throw new RestaurantNotFoundException("RNF-001","No restaurant by this id");
+        }
+
         RestaurantDetailsResponse restaurantDetailsResponse = RestaurantTransformer.toResponseEntityWithCategoryItems(restaurantEntity);
         return ResponseBuilder.ok().payload(restaurantDetailsResponse).build();
     }
@@ -99,6 +106,7 @@ public class RestaurantController {
         if(restaurantEntity==null) {
             throw new RestaurantNotFoundException("RNF-001","No restaurant by this id");
         }
+
         if(customer_rating<1 || customer_rating>5){
             throw new InvalidRatingException("IRE-001","Restaurant should be in the range of 1 to 5");
         }
@@ -107,7 +115,6 @@ public class RestaurantController {
         Double calculatedValue = (existingRating.doubleValue() * count) + customer_rating;
         restaurantEntity.setNumberOfCustomersRated(count+1);
         calculatedValue = (calculatedValue/restaurantEntity.getNumberOfCustomersRated());
-        calculatedValue = Math.floor(calculatedValue);
         restaurantEntity.setCustomerRating(BigDecimal.valueOf(calculatedValue)); // update the setCustomerRating
         RestaurantEntity updateRestaurant = restaurantService.updateRestaurantRating(restaurantEntity);
 
