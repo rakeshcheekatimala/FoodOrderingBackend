@@ -12,7 +12,8 @@ import java.util.List;
 @NamedQueries(
         {
                 @NamedQuery(name = "RestaurantEntity.findAll", query = "select r from RestaurantEntity r order by r.customerRating desc"),
-                @NamedQuery(name = "RestaurantEntity.findByName", query = "select r from RestaurantEntity  r where  lower(r.restaurantName) like CONCAT(:restaurantName,'%')")
+                @NamedQuery(name = "RestaurantEntity.findByName", query = "select r from RestaurantEntity  r where  lower(r.restaurantName) like CONCAT(:restaurantName,'%')"),
+                @NamedQuery(name = "RestaurantEntity.byUUid", query = "SELECT r FROM RestaurantEntity r where r.uuid=:uuid")
 
         }
 )
