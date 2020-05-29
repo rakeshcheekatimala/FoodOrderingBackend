@@ -6,6 +6,8 @@ import com.upgrad.FoodOrderingApp.service.entity.RestaurantEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.LockModeType;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -27,5 +29,9 @@ public class RestaurantService {
 
     public List<RestaurantCategoryEntity> restaurantByCategory(Long categoryId){
         return restaurantDao.getRestaurantByCategory(categoryId);
+    }
+
+    public RestaurantEntity updateRestaurantRating(final RestaurantEntity restaurantEntity) {
+        return restaurantDao.updateRestaurantRating(restaurantEntity);
     }
 }
