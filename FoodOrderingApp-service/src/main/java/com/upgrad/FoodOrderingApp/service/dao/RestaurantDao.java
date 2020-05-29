@@ -6,8 +6,10 @@ import com.upgrad.FoodOrderingApp.service.entity.RestaurantEntity;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository
@@ -49,5 +51,11 @@ public class RestaurantDao {
         }catch (NoResultException nre){
             return null;
         }
+    }
+
+    @Transactional
+    public RestaurantEntity updateRestaurantRating(final RestaurantEntity restaurantEntity){
+        entityManager.merge(restaurantEntity);
+        return restaurantEntity;
     }
 }
