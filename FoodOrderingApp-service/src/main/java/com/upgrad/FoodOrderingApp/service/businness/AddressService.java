@@ -24,4 +24,13 @@ public class AddressService {
     public StateEntity getStateByUUID(String stateUUID){
         return addressDao.getStateByUUID(stateUUID);
     }
+
+    public AddressEntity deleteAddress(AddressEntity addressEntity) {
+        return  addressDao.deleteAddress(addressEntity);
+    }
+
+    public AddressEntity getAddressByUUID(String addressUuid) {
+        return addressDao.getAddressByUUID(addressUuid);
+    }
+
 }
