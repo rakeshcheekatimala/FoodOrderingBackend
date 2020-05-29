@@ -95,13 +95,20 @@ public class RestaurantController {
         // get the categoryEntity by using the category_id received in the request param
 
         RestaurantEntity  restaurantEntity= restaurantService.restaurantByUUID(restaurant_id);
+
         if(restaurantEntity==null) {
             throw new RestaurantNotFoundException("RNF-001","No restaurant by this id");
         }
         if(customer_rating<1 || customer_rating>5){
             throw new InvalidRatingException("IRE-001","Restaurant should be in the range of 1 to 5");
         }
-        restaurantEntity.setCustomerRating(BigDecimal.valueOf(customer_rating)); // update the setCustomerRating
+        BigDecimal existingRating  = restaurantEntity.getCustomerRating();
+        Integer count = restaurantEntity.getNumberOfCustomersRated();
+        Double calculatedValue = (existingRating.doubleValue() * count) + customer_rating;
+        restaurantEntity.setNumberOfCustomersRated(count+1);
+        calculatedValue = (calculatedValue/restaurantEntity.getNumberOfCustomersRated());
+        calculatedValue = Math.floor(calculatedValue);
+        restaurantEntity.setCustomerRating(BigDecimal.valueOf(calculatedValue)); // update the setCustomerRating
         RestaurantEntity updateRestaurant = restaurantService.updateRestaurantRating(restaurantEntity);
 
         // Attach the details to the updateResponse
