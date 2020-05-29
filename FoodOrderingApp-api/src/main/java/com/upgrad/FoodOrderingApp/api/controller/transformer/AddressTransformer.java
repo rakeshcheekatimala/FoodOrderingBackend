@@ -3,15 +3,12 @@ package com.upgrad.FoodOrderingApp.api.controller.transformer;
 import com.upgrad.FoodOrderingApp.api.model.StatesList;
 import com.upgrad.FoodOrderingApp.api.model.StatesListResponse;
 import com.upgrad.FoodOrderingApp.service.entity.StateEntity;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
 import java.util.List;
 import java.util.UUID;
 
 final public class AddressTransformer {
-    public static StatesListResponse toStateListResponse(List<StateEntity> stateEntityList){
 
+    public static StatesListResponse toStateListResponse(List<StateEntity> stateEntityList) {
         StatesListResponse stateListResponse = new StatesListResponse();
        //iterate stateEntityList parameter and add to StatesListResponse
         stateEntityList.forEach(se -> {
@@ -20,7 +17,6 @@ final public class AddressTransformer {
             statesItem.setId(UUID.fromString(se.getUuid()));
             stateListResponse.addStatesItem(statesItem);
         });
-
         return stateListResponse;
     }
 }
