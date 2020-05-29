@@ -7,6 +7,11 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "state")
+@NamedQueries(
+        {
+                @NamedQuery(name = "StateEntity.getAllStates", query = "select s from StateEntity s order by s.stateName asc")
+        }
+)
 public class StateEntity implements Serializable {
 
     @Id
