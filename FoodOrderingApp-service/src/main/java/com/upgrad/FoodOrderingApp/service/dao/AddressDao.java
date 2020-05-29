@@ -31,9 +31,23 @@ public class AddressDao {
 
     public StateEntity getStateByUUID(String stateUUID){
         try {
-            return entityManager.createNamedQuery("StateEntity.findStateByUUID", StateEntity.class).getSingleResult();
+            return entityManager.createNamedQuery("StateEntity.findStateByUUID", StateEntity.class).setParameter("uuid",stateUUID).getSingleResult();
         } catch (NoResultException nre) {
             return null;
         }
     }
+
+    public AddressEntity getAddressByUUID(String addressUuid){
+        try {
+            return entityManager.createNamedQuery("AddressEntity.findAddressByUuid", AddressEntity.class).setParameter("uuid",addressUuid).getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
+
+    public AddressEntity deleteAddress(AddressEntity addressEntity) {
+        entityManager.remove(addressEntity);
+        return addressEntity;
+    }
+
 }
