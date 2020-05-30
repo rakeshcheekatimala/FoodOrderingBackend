@@ -72,7 +72,7 @@ public class AddressController {
         if (addressEntity == null) {
             throw new AddressNotFoundException("ANF-003", "No address by this id.");
         }
-        
+
         AddressEntity deletedEntity = addressService.deleteAddress(addressEntity);
         DeleteAddressResponse deleteAddressResponse = new DeleteAddressResponse().id(UUID.fromString(deletedEntity.getUuid()))
                 .status("ADDRESS DELETED SUCCESSFULLY");
