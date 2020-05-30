@@ -15,7 +15,7 @@ public class CustomerAddressEntity {
     @JoinColumn(name = "customer_id")
     private CustomerEntity customer;
 
-    @ManyToOne
+    @ManyToOne(cascade=CascadeType.ALL)
     @JoinColumn(name = "address_id")
     private AddressEntity address;
 
