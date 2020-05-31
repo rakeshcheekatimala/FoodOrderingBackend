@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.transaction.Transactional;
+import java.time.ZonedDateTime;
 
 @Repository
 public class CustomerDao {
@@ -32,5 +34,13 @@ public class CustomerDao {
     public CustomerAuthEntity updateAuthToken( CustomerAuthEntity customerAuthEntity) {
         entityManager.merge(customerAuthEntity);
         return customerAuthEntity;
+    }
+
+    @Transactional
+    public CustomerAuthEntity logout(CustomerAuthEntity customerAuthEntity) {
+        final ZonedDateTime now = ZonedDateTime.now();
+        customerAuthEntity.setLogoutAt(now);
+        entityManager.merge(customerAuthEntity);
+        return  customerAuthEntity;
     }
 }
