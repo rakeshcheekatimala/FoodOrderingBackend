@@ -28,4 +28,9 @@ public class CustomerDao {
          entityManager.persist(customerAuthEntity);
          return customerAuthEntity;
     }
+
+    public CustomerAuthEntity updateAuthToken( CustomerAuthEntity customerAuthEntity) {
+        entityManager.merge(customerAuthEntity);
+        return customerAuthEntity;
+    }
 }
