@@ -58,7 +58,6 @@ public class CustomerService {
             }
             else{
                 authTokenEntity.setId(isExisting.getId());
-                authTokenEntity.setLogoutAt(isExisting.getLogoutAt());
                 customerDao.updateAuthToken(authTokenEntity); // update  auth token if it is existing
             }
             return authTokenEntity;
@@ -66,6 +65,10 @@ public class CustomerService {
         else {
             throw new AuthenticationFailedException("ATH-002", "Invalid Credentials");
         }
+    }
+
+    public CustomerAuthEntity logout(CustomerAuthEntity customerAuthEntity){
+        return  customerDao.logout(customerAuthEntity);
     }
 
 }
