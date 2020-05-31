@@ -38,4 +38,7 @@ public class AddressService {
         return addressDao.saveCustomerAddress(customerAddressEntity);
     }
 
+    public List<CustomerAddressEntity> getAllAddress(String uuid) {
+        return addressDao.getAllAddress(uuid);
+    }
 }
