@@ -47,7 +47,7 @@ public class RestaurantDao {
     public List<RestaurantCategoryEntity> getRestaurantByCategory(Long categoryId){
 
         try {
-            return entityManager.createNamedQuery("findRestaurantsByCategoryId", RestaurantCategoryEntity.class).setParameter("id",categoryId).getResultList();
+            return entityManager.createNamedQuery("findRestaurantsByCategoryId", RestaurantCategoryEntity.class).setParameter("categoryId",categoryId).getResultList();
         }catch (NoResultException nre){
             return null;
         }

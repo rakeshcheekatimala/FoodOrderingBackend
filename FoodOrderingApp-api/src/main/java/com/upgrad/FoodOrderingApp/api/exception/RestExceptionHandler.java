@@ -1,6 +1,7 @@
 package com.upgrad.FoodOrderingApp.api.exception;
 
 import com.upgrad.FoodOrderingApp.api.model.ErrorResponse;
+import com.upgrad.FoodOrderingApp.service.exception.AuthenticationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.InvalidRatingException;
 import com.upgrad.FoodOrderingApp.service.exception.RestaurantNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,13 @@ public class RestExceptionHandler {
         return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exc.getCode()).
                 message(exc.getErrorMessage()),
                 HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AuthenticationFailedException.class)
+    public ResponseEntity<ErrorResponse> authenticationFailedException(AuthenticationFailedException exc , WebRequest request) {
+        return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exc.getCode()).
+                message(exc.getErrorMessage()),
+                HttpStatus.UNAUTHORIZED);
     }
 
 }

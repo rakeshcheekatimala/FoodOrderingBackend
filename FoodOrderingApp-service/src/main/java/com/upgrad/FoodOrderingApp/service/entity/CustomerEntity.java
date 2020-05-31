@@ -9,6 +9,9 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "customer")
+@NamedQueries({
+        @NamedQuery(name = "CustomerEntity.customerByContactNumber", query = "select ce from CustomerEntity ce where ce.contactNumber = :contactNumber"),
+})
 public class CustomerEntity implements Serializable {
     @Id
     @Column(name = "ID")
