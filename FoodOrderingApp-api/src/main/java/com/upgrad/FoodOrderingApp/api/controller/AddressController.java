@@ -6,10 +6,7 @@ import com.upgrad.FoodOrderingApp.api.controller.transformer.AddressTransformer;
 import com.upgrad.FoodOrderingApp.api.model.*;
 import com.upgrad.FoodOrderingApp.service.businness.AddressService;
 import com.upgrad.FoodOrderingApp.service.businness.CustomerAuthService;
-import com.upgrad.FoodOrderingApp.service.entity.AddressEntity;
-import com.upgrad.FoodOrderingApp.service.entity.CustomerAddressEntity;
-import com.upgrad.FoodOrderingApp.service.entity.CustomerAuthEntity;
-import com.upgrad.FoodOrderingApp.service.entity.StateEntity;
+import com.upgrad.FoodOrderingApp.service.entity.*;
 import com.upgrad.FoodOrderingApp.service.exception.AddressNotFoundException;
 import com.upgrad.FoodOrderingApp.service.exception.AuthenticationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
@@ -22,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -93,6 +91,31 @@ public class AddressController {
                 .status("ADDRESS DELETED SUCCESSFULLY");
 
         return  new ResponseEntity<DeleteAddressResponse>(deleteAddressResponse, HttpStatus.OK);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, path = "/address/customer", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<AddressListResponse> getAllCustomerAddress(@RequestHeader("authorization") String authorization) throws AuthorizationFailedException, AuthenticationFailedException {
+        final BearerAuthDecoder authDecoder = new BearerAuthDecoder(authorization);
+        String accessToken = authDecoder.getAccessToken();
+        CustomerAuthEntity customerAuthEntity = customerAuthService.getCustomerByToken(accessToken);
+        Boolean isAuthorizedUser = customerAuthService.isAuthorizedUser(accessToken,customerAuthEntity);
+        // isAuthorizedUser will tell whether the user is valid user or not
+        if(isAuthorizedUser) {
+            List<CustomerAddressEntity> customerAddressEntities = addressService.getAllAddress(customerAuthEntity.getCustomer().getUuid());
+            List<AddressEntity> addressEntityList = new LinkedList<>();
+            //iterate over the customerAddressEntities List and add each address entity to the addressEntityList
+            customerAddressEntities.forEach(addressEntity -> {
+                addressEntityList.add(addressEntity.getAddress());
+            });
+
+            // call the transform method to populate the AddressListResponse with the correct data
+            AddressListResponse addressListResponse = AddressTransformer.toAddressListResponse(addressEntityList);
+            return new ResponseEntity<AddressListResponse>(addressListResponse, HttpStatus.OK);
+        }
+        else {
+            throw new AuthorizationFailedException("ATHR-001", "Customer is not Logged in.");
+        }
+
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/states", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
