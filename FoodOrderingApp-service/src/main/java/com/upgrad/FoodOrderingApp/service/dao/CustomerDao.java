@@ -1,7 +1,31 @@
 package com.upgrad.FoodOrderingApp.service.dao;
 
+import com.upgrad.FoodOrderingApp.service.entity.CustomerAuthEntity;
+import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import javax.persistence.Entity;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 
 @Repository
 public class CustomerDao {
+
+    @Autowired
+    EntityManager entityManager;
+
+    public CustomerEntity getCustomerByContact(String contactNumber){
+        try{
+            return entityManager.createNamedQuery("CustomerEntity.customerByContactNumber",CustomerEntity.class).setParameter("contactNumber",contactNumber).getSingleResult();
+        }
+        catch(NoResultException nre){
+            return null;
+        }
+    }
+
+    public CustomerAuthEntity createAuthToken( CustomerAuthEntity customerAuthEntity) {
+         entityManager.persist(customerAuthEntity);
+         return customerAuthEntity;
+    }
 }
