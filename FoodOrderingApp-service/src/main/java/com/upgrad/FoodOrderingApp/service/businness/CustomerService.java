@@ -1,5 +1,6 @@
 package com.upgrad.FoodOrderingApp.service.businness;
 
+import com.upgrad.FoodOrderingApp.service.dao.CustomerAuthDao;
 import com.upgrad.FoodOrderingApp.service.dao.CustomerDao;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerAuthEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
@@ -16,6 +17,8 @@ import java.time.ZonedDateTime;
 public class CustomerService {
     @Autowired
     CustomerDao customerDao;
+    @Autowired
+    CustomerAuthDao customerAuthDao;
 
     PasswordCryptographyProvider cryptographyProvider;
     public CustomerEntity getCustomerByContact(String contactNumber){
@@ -44,15 +47,21 @@ public class CustomerService {
             final ZonedDateTime expiresAt = now.plusHours(8);
             final String authToken = tokenProvider.generateToken(customerEntity.getUuid(), now, expiresAt);
             final CustomerAuthEntity authTokenEntity = new CustomerAuthEntity();
-
             authTokenEntity.setAccessToken(authToken);
             authTokenEntity.setLoginAt(now);
             authTokenEntity.setExpiresAt(expiresAt);
             authTokenEntity.setUuid(customerEntity.getUuid());
-            authTokenEntity.setCustomer(customerEntity);
-            customerDao.createAuthToken(authTokenEntity);
-
-            return  authTokenEntity;
+            authTokenEntity.setCustomer(customerEntity); // setting the customer
+            CustomerAuthEntity isExisting = customerAuthDao.getCustomerById(customerEntity.getId());
+            if(isExisting==null){
+                customerDao.createAuthToken(authTokenEntity); // create new auth token if it is does not exist
+            }
+            else{
+                authTokenEntity.setId(isExisting.getId());
+                authTokenEntity.setLogoutAt(isExisting.getLogoutAt());
+                customerDao.updateAuthToken(authTokenEntity); // update  auth token if it is existing
+            }
+            return authTokenEntity;
         }
         else {
             throw new AuthenticationFailedException("ATH-002", "Invalid Credentials");
