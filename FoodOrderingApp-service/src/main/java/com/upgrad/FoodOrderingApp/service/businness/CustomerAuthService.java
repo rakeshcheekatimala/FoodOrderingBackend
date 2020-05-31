@@ -17,8 +17,14 @@ public class CustomerAuthService {
         return customerAuthDao.getCustomerByToken(accessToken);
     }
 
-    public Boolean isAuthorizedUser(final String accessToken) throws AuthorizationFailedException {
-        CustomerAuthEntity customerAuthEntity = customerAuthDao.getCustomerByToken(accessToken);
+
+    public Boolean isAuthorizedUser(final String accessToken,CustomerAuthEntity existingAuthEntity) throws AuthorizationFailedException {
+        CustomerAuthEntity customerAuthEntity = null;
+
+        if(existingAuthEntity==null)
+            customerAuthEntity = customerAuthDao.getCustomerByToken(accessToken);
+        else
+            customerAuthEntity = existingAuthEntity;
 
         if(customerAuthEntity == null){
             throw new AuthorizationFailedException("ATHR-001", "Customer is not Logged in.");
