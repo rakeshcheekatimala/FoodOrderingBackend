@@ -69,25 +69,10 @@ public class CustomerController {
         String accessToken = authDecoder.getAccessToken();
         CustomerAuthEntity customerAuthEntity = customerAuthService.getCustomerByToken(accessToken);
 
-        if(customerAuthEntity == null){
-            throw new AuthorizationFailedException("ATHR-001", "Customer is not Logged in.");
-        }
-        CustomerAuthTokenVerifier customerAuthTokenVerifier = new CustomerAuthTokenVerifier(customerAuthEntity);
-
-        if(customerAuthTokenVerifier.hasLoggedOut()){
-            throw new AuthorizationFailedException("ATHR-002", "Customer is logged out. Log in again to access this endpoint.");
-        }
-
-        if (customerAuthTokenVerifier.hasExpired()) {
-            throw new AuthorizationFailedException("ATHR-003", "Your session is expired. Log in again to access this endpoint.");
-        }
-
-        // Calls the logout method by passing the bearer token
         final CustomerAuthEntity logoutEntity = customerService.logout(customerAuthEntity);
-
         LogoutResponse logoutResponse = CustomerTransformer.toLogoutResponse(logoutEntity.getCustomer());
-        // Returns the LogoutResponse with OK http status
+            // Returns the LogoutResponse with OK http status
         return new ResponseEntity<LogoutResponse>(logoutResponse, HttpStatus.OK);
-
+        // Calls the logout method by passing the bearer token
     }
 }
