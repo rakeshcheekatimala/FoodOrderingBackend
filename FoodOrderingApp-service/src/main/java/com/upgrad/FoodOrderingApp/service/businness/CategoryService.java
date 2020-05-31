@@ -19,8 +19,7 @@ public class CategoryService {
 
     public List<CategoryEntity> getAllCategoriesOrderedByName() {
         //Calls getAllCategoriesOrderedByName of categoryDao to get list of CategoryEntity
-        List<CategoryEntity> categoryEntities = categoryDao.getAllCategoriesOrderedByName();
-        return categoryEntities;
+        return categoryDao.getAllCategoriesOrderedByName();
     }
 
     public CategoryEntity getCategoryById(String id) {

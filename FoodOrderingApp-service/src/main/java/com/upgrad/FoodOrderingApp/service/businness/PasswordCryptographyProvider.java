@@ -16,9 +16,9 @@ import java.util.Random;
 @Component
 public class PasswordCryptographyProvider {
 
-    private static String SECRET_KEY_ALGORITHM = "PBKDF2WithHmacSHA512";
-    private static int HASHING_ITERATIONS = 1000;
-    private static int HASHING_KEY_LENGTH = 64;
+    private static final String SECRET_KEY_ALGORITHM = "PBKDF2WithHmacSHA512";
+    private static final int HASHING_ITERATIONS = 1000;
+    private static final int HASHING_KEY_LENGTH = 64;
     private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
 
     /**
@@ -69,8 +69,7 @@ public class PasswordCryptographyProvider {
             SecretKeyFactory skf = SecretKeyFactory.getInstance(SECRET_KEY_ALGORITHM);
             PBEKeySpec spec = new PBEKeySpec(password, salt, HASHING_ITERATIONS, HASHING_KEY_LENGTH);
             SecretKey key = skf.generateSecret(spec);
-            byte[] res = key.getEncoded();
-            return res;
+            return key.getEncoded();
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
             throw new RuntimeException(e);
         }
@@ -86,7 +85,7 @@ public class PasswordCryptographyProvider {
         return new String(hexChars);
     }
 
-    private static String getBase64EncodedBytesAsString(byte bytes[]) {
+    private static String getBase64EncodedBytesAsString(byte[] bytes) {
         return Base64.getEncoder().encodeToString(bytes);
     }
 

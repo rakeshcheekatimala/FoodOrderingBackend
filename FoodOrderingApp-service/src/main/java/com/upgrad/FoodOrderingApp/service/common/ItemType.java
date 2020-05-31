@@ -4,7 +4,7 @@ public enum ItemType {
     VEG("VEG"),
     NON_VEG("NON_VEG");
 
-    private String value;
+    private final String value;
 
     private ItemType(String value) {
         this.value = value;
