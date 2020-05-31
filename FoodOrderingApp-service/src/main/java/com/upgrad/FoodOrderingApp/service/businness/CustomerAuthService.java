@@ -27,7 +27,7 @@ public class CustomerAuthService {
             customerAuthEntity = existingAuthEntity;
 
         if(customerAuthEntity == null){
-            throw new AuthorizationFailedException("ATHR-001", "Customer is not Logged in.");
+            return false;
         }
         CustomerAuthTokenVerifier customerAuthTokenVerifier = new CustomerAuthTokenVerifier(customerAuthEntity);
 
