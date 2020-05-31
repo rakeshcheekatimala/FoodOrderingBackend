@@ -1,6 +1,7 @@
 package com.upgrad.FoodOrderingApp.service.dao;
 
 import com.upgrad.FoodOrderingApp.service.entity.AddressEntity;
+import com.upgrad.FoodOrderingApp.service.entity.CustomerAddressEntity;
 import com.upgrad.FoodOrderingApp.service.entity.StateEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -50,4 +51,9 @@ public class AddressDao {
         return addressEntity;
     }
 
+    @Transactional
+    public CustomerAddressEntity saveCustomerAddress(CustomerAddressEntity customerAddressEntity) {
+        entityManager.persist(customerAddressEntity);
+        return customerAddressEntity;
+    }
 }
