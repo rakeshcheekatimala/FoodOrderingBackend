@@ -56,4 +56,12 @@ public class AddressDao {
         entityManager.persist(customerAddressEntity);
         return customerAddressEntity;
     }
+
+    public List<CustomerAddressEntity> getAllAddress(String uuid){
+        try {
+             return entityManager.createNamedQuery("CustomerAddressEntity.findAddressByCustomerId", CustomerAddressEntity.class).setParameter("uuid",uuid).getResultList();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
 }
