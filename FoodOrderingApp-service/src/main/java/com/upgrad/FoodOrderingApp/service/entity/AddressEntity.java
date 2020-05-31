@@ -11,7 +11,6 @@ import javax.validation.constraints.Size;
         }
 )
 public class AddressEntity {
-
     @Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)

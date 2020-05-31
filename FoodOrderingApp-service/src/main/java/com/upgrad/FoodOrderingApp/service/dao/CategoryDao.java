@@ -14,22 +14,19 @@ public class CategoryDao {
     private EntityManager entityManager;
 
 
-    public CategoryEntity getCategoryByUuid(String uuid){
+    public CategoryEntity getCategoryByUuid(String uuid) {
         try {
-            return entityManager.createNamedQuery("CategoryEntity.byUUid", CategoryEntity.class).setParameter("uuid",uuid).getSingleResult();
-        } catch(NoResultException e) {
+            return entityManager.createNamedQuery("CategoryEntity.byUUid", CategoryEntity.class).setParameter("uuid", uuid).getSingleResult();
+        } catch (NoResultException e) {
             return null;
         }
     }
 
-    public List<CategoryEntity> getAllCategoriesOrderedByName(){
+    public List<CategoryEntity> getAllCategoriesOrderedByName() throws NoResultException {
         try {
-            List<CategoryEntity> categoryEntities = entityManager.createNamedQuery("CategoryEntity.getAllCategoriesOrderedByName",CategoryEntity.class).getResultList();
-            return categoryEntities;
-        }catch (NoResultException e){
+            return entityManager.createNamedQuery("CategoryEntity.getAllCategoriesOrderedByName", CategoryEntity.class).getResultList();
+        } catch (NoResultException e) {
             return null;
         }
     }
-
-
 }

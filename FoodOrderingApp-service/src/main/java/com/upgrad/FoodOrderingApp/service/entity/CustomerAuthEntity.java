@@ -7,15 +7,18 @@ import java.io.Serializable;
 import java.time.ZonedDateTime;
 
 @Entity
-@Table(name="customer_auth")
+@Table(name = "customer_auth")
+@NamedQueries({
+        @NamedQuery(name = "CustomerAuthEntity.getCustomerAuthByAccessToken", query = "SELECT c from CustomerAuthEntity c where c.accessToken = :access_Token"),
+})
 public class CustomerAuthEntity implements Serializable {
     @Id
-    @Column(name="ID")
+    @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column (name = "UUID")
-    @Size (max = 200)
+    @Column(name = "UUID")
+    @Size(max = 200)
     @NotNull
     private String uuid;
 
