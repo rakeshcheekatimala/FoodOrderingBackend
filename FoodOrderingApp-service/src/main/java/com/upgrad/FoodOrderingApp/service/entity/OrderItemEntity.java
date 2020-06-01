@@ -4,6 +4,11 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "order_item")
+@NamedQueries({
+        @NamedQuery(name = "OrderItemEntity.getAllOrdersList", query = "SELECT oi from OrderItemEntity oi where oi.orders.id = :ordersId"),
+        @NamedQuery(name = "OrderItemEntity.getAllOrdersListByItemIds", query = "SELECT oi from OrderItemEntity oi where oi.item.id = :itemIds")
+
+})
 public class OrderItemEntity {
     @Id
     @Column(name = "ID")
