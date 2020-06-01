@@ -1,5 +1,7 @@
 package com.upgrad.FoodOrderingApp.service.dao;
 
+import com.upgrad.FoodOrderingApp.service.entity.AddressEntity;
+import com.upgrad.FoodOrderingApp.service.entity.CustomerAddressEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerAuthEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,5 +63,14 @@ public class CustomerDao {
         customerAuthEntity.setLogoutAt(now);
         entityManager.merge(customerAuthEntity);
         return  customerAuthEntity;
+    }
+
+    public CustomerAddressEntity getCustomerAddressByAddressEntity(AddressEntity addressEntity){
+        try {
+            CustomerAddressEntity customerAddressEntity = entityManager.createNamedQuery("CustomerAddressEntity.getCustomerAddressByAddressEntity",CustomerAddressEntity.class).setParameter("address_entity",addressEntity).getSingleResult();
+            return customerAddressEntity;
+        }catch (NoResultException nre){
+            return null;
+        }
     }
 }
