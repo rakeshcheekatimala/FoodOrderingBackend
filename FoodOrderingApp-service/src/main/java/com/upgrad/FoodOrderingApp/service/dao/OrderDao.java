@@ -16,59 +16,55 @@ public class OrderDao {
     @PersistenceContext
     EntityManager em;
 
-    public List<OrderItemEntity> getOrderDetails(ArrayList<Long> ordersid){
-        try{
-            return em.createNamedQuery("getOrderDetails",OrderItemEntity.class).setParameter("ordersid",ordersid).getResultList();
-        }
-        catch(NoResultException nre){
+    public List<OrderItemEntity> getOrderDetails(ArrayList<Long> ordersid) {
+        try {
+            return em.createNamedQuery("getOrderDetails", OrderItemEntity.class).setParameter("ordersid", ordersid).getResultList();
+        } catch (NoResultException nre) {
             return null;
         }
     }
 
-    public List<OrdersEntity> getOrders(int id){
+    public List<OrdersEntity> getOrders(int id) {
 
-        try{
-            return em.createNamedQuery("getOrders",OrdersEntity.class).setParameter("custid",id).getResultList();
-        }
-        catch(NoResultException nre){
+        try {
+            return em.createNamedQuery("getOrders", OrdersEntity.class).setParameter("custid", id).getResultList();
+        } catch (NoResultException nre) {
             return null;
         }
     }
 
-    public AddressEntity getAddressByUUID(String uuid){
+    public AddressEntity getAddressByUUID(String uuid) {
 
-        try{
-            return em.createNamedQuery("getAddressByuuid", AddressEntity.class).setParameter("uuid",uuid).getSingleResult();
-        }
-        catch(NoResultException nre){
+        try {
+            return em.createNamedQuery("getAddressByuuid", AddressEntity.class).setParameter("uuid", uuid).getSingleResult();
+        } catch (NoResultException nre) {
             return null;
         }
     }
-    public RestaurantEntity getRestaurantByUUID(String uuid){
-        try{
-            return em.createNamedQuery("getRestaurantByuuid", RestaurantEntity.class).setParameter("uuid",uuid).getSingleResult();
-        }
-        catch(NoResultException nre){
+
+    public RestaurantEntity getRestaurantByUUID(String uuid) {
+        try {
+            return em.createNamedQuery("getRestaurantByuuid", RestaurantEntity.class).setParameter("uuid", uuid).getSingleResult();
+        } catch (NoResultException nre) {
             return null;
         }
     }
-    public Boolean saveOrderItem(List<OrderItemEntity> orderItemEntities)
-    {
+
+    public Boolean saveOrderItem(List<OrderItemEntity> orderItemEntities) {
         em.persist(orderItemEntities);
-        return  true;
+        return true;
     }
-    public OrdersEntity saveOrder(OrdersEntity orderEntity)
-    {
+
+    public OrdersEntity saveOrder(OrdersEntity orderEntity) {
         em.persist(orderEntity);
-        return  orderEntity;
+        return orderEntity;
     }
 
 
-    public ItemEntity getItemByuuid(String uuid){
-        try{
-            return em.createNamedQuery("getItemByuuid", ItemEntity.class).setParameter("uuid",uuid).getSingleResult();
-        }
-        catch(NoResultException nre){
+    public ItemEntity getItemByuuid(String uuid) {
+        try {
+            return em.createNamedQuery("getItemByuuid", ItemEntity.class).setParameter("uuid", uuid).getSingleResult();
+        } catch (NoResultException nre) {
             return null;
         }
     }

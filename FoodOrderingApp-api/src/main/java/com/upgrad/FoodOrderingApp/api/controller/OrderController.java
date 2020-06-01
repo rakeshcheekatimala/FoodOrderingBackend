@@ -104,10 +104,7 @@ public class OrderController {
             OrderList orderList1 = new OrderList().customer(orderListCustomer).address(orderListAddress).itemQuantities(itemQuantityResponsesList).bill(order.getBill()).coupon(coupon).payment(payment).id(UUID.fromString(order.getUuid())).date(order.getDate().toString()).discount(order.getDiscount());
 
             orderList.add(orderList1);
-
-
         }
-        System.out.println(orderList.size());
         return new ResponseEntity<List<OrderList>>(orderList, HttpStatus.OK);
 
     }
@@ -129,7 +126,7 @@ public class OrderController {
         }
         CouponEntity couponEntity = null;
         if (saveOrderRequest.getCouponId() != null) {
-
+            
             couponEntity = couponBusinessService.getCouponByUUID(saveOrderRequest.getCouponId().toString());
             if (couponEntity == null) {
                 throw new CouponNotFoundException("CPF-002", "No coupon by this id");
@@ -184,11 +181,10 @@ public class OrderController {
                 orderItemEntity.setQuantity(item.getQuantity());
                 orderItemEntity.setPrice(item.getPrice());
                 orderItemEntities.add(orderItemEntity);
-                
+
 
             }
         }
-
 
 
         Boolean isSaved = orderBusinessService.saveOrderItem(orderItemEntities);

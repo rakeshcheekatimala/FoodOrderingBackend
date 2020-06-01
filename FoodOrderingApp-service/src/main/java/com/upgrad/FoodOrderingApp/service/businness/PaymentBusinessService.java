@@ -13,7 +13,7 @@ public class PaymentBusinessService {
     @Autowired
     PaymentDao paymentDao;
 
-    public List<PaymentEntity> getAllPaymentMethods(){
+    public List<PaymentEntity> getAllPaymentMethods() {
         return paymentDao.getAllPaymentMethods();
     }
 }

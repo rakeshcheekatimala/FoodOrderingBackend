@@ -16,31 +16,26 @@ public class CouponDao {
     @PersistenceContext
     EntityManager entityManager;
 
-    public CustomerAuthEntity getCustomerByAccessToken(String accessToken){
-        try{
-          return  entityManager.createNamedQuery("customerAuthByAccessToken", CustomerAuthEntity.class).setParameter("accessToken",accessToken).getSingleResult();
-        }
-
-        catch(NoResultException nre) {
+    public CustomerAuthEntity getCustomerByAccessToken(String accessToken) {
+        try {
+            return entityManager.createNamedQuery("customerAuthByAccessToken", CustomerAuthEntity.class).setParameter("accessToken", accessToken).getSingleResult();
+        } catch (NoResultException nre) {
             return null;
         }
     }
 
-    public CouponEntity getCouponByName(String couponname){
-        try{
-            return  entityManager.createNamedQuery("couponByname", CouponEntity.class).setParameter("couponName",couponname).getSingleResult();
-        }
-
-        catch(NoResultException nre) {
+    public CouponEntity getCouponByName(String couponname) {
+        try {
+            return entityManager.createNamedQuery("couponByname", CouponEntity.class).setParameter("couponName", couponname).getSingleResult();
+        } catch (NoResultException nre) {
             return null;
         }
     }
-    public CouponEntity getCouponByUUID(String uuid){
-        try{
-            return  entityManager.createNamedQuery("getCouponByUUID", CouponEntity.class).setParameter("uuid",uuid).getSingleResult();
-        }
 
-        catch(NoResultException nre) {
+    public CouponEntity getCouponByUUID(String uuid) {
+        try {
+            return entityManager.createNamedQuery("getCouponByUUID", CouponEntity.class).setParameter("uuid", uuid).getSingleResult();
+        } catch (NoResultException nre) {
             return null;
         }
     }

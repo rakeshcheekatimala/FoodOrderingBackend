@@ -20,40 +20,38 @@ public class OrderBusinessService {
     @Autowired
     PaymentDao paymentDao;
 
-public List<OrderItemEntity> getPastOrders(ArrayList<Long> ordersid){
-     return orderDao.getOrderDetails(ordersid);
-}
+    public List<OrderItemEntity> getPastOrders(ArrayList<Long> ordersid) {
+        return orderDao.getOrderDetails(ordersid);
+    }
 
-public List<OrdersEntity> getOrders(int id){
-    return orderDao.getOrders(id);
-}
+    public List<OrdersEntity> getOrders(int id) {
+        return orderDao.getOrders(id);
+    }
 
-public AddressEntity getAddressByUUID(String uuid){
-    return orderDao.getAddressByUUID(uuid);
-}
+    public AddressEntity getAddressByUUID(String uuid) {
+        return orderDao.getAddressByUUID(uuid);
+    }
 
-public PaymentEntity getPaymentByUUID(String uuid){
-    return  paymentDao.getPaymentByUUID(uuid);
-}
+    public PaymentEntity getPaymentByUUID(String uuid) {
+        return paymentDao.getPaymentByUUID(uuid);
+    }
 
-public RestaurantEntity getRestaurantByUUID(String uuid){
-    return orderDao.getRestaurantByUUID(uuid);
-}
-
-    @Transactional(propagation = Propagation.REQUIRED)
-public Boolean saveOrderItem(List <OrderItemEntity> orderItemEntities)
-{
-    return orderDao.saveOrderItem(orderItemEntities);
-}
+    public RestaurantEntity getRestaurantByUUID(String uuid) {
+        return orderDao.getRestaurantByUUID(uuid);
+    }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public OrdersEntity saveOrder(OrdersEntity orderEntity)
-    {
+    public Boolean saveOrderItem(List<OrderItemEntity> orderItemEntities) {
+        return orderDao.saveOrderItem(orderItemEntities);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public OrdersEntity saveOrder(OrdersEntity orderEntity) {
         return orderDao.saveOrder(orderEntity);
     }
 
 
-    public ItemEntity getItemByuuid(String uuid){
-    return orderDao.getItemByuuid(uuid);
+    public ItemEntity getItemByuuid(String uuid) {
+        return orderDao.getItemByuuid(uuid);
     }
 }

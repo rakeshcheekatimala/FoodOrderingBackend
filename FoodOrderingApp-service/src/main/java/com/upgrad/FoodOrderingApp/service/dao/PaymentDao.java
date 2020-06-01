@@ -15,19 +15,18 @@ public class PaymentDao {
     @PersistenceContext
     EntityManager entityManager;
 
-    public List<PaymentEntity> getAllPaymentMethods(){
-        try{
-          return entityManager.createNamedQuery("GetPaymentMethods",PaymentEntity.class).getResultList();
-        }
-        catch(NoResultException nre){
+    public List<PaymentEntity> getAllPaymentMethods() {
+        try {
+            return entityManager.createNamedQuery("GetPaymentMethods", PaymentEntity.class).getResultList();
+        } catch (NoResultException nre) {
             return null;
         }
     }
-    public PaymentEntity getPaymentByUUID(String uuid){
-        try{
-            return entityManager.createNamedQuery("getPaymentByUUID",PaymentEntity.class).setParameter("uuid",uuid).getSingleResult();
-        }
-        catch(NoResultException nre){
+
+    public PaymentEntity getPaymentByUUID(String uuid) {
+        try {
+            return entityManager.createNamedQuery("getPaymentByUUID", PaymentEntity.class).setParameter("uuid", uuid).getSingleResult();
+        } catch (NoResultException nre) {
             return null;
         }
     }

@@ -24,18 +24,18 @@ public class PaymentController {
     @Autowired
     PaymentBusinessService paymentBusinessService;
 
-    @RequestMapping(method=RequestMethod.GET, path="/payment", produces=MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<PaymentListResponse> getAllPaymentMethods(){
+    @RequestMapping(method = RequestMethod.GET, path = "/payment", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<PaymentListResponse> getAllPaymentMethods() {
 
-        List<PaymentEntity> paymentEntityList =paymentBusinessService.getAllPaymentMethods();
+        List<PaymentEntity> paymentEntityList = paymentBusinessService.getAllPaymentMethods();
 
-        List <PaymentResponse> paymentResponseList = new ArrayList<PaymentResponse>();
-        for(PaymentEntity paymentEntity : paymentEntityList){
+        List<PaymentResponse> paymentResponseList = new ArrayList<PaymentResponse>();
+        for (PaymentEntity paymentEntity : paymentEntityList) {
             PaymentResponse paymentResponse = new PaymentResponse().id(UUID.fromString(paymentEntity.getUuid())).paymentName(paymentEntity.getPaymentName());
             paymentResponseList.add(paymentResponse);
         }
-         PaymentListResponse paymentListResponse =new PaymentListResponse().paymentMethods(paymentResponseList);
-        return new ResponseEntity<PaymentListResponse>(paymentListResponse,HttpStatus.OK);
+        PaymentListResponse paymentListResponse = new PaymentListResponse().paymentMethods(paymentResponseList);
+        return new ResponseEntity<PaymentListResponse>(paymentListResponse, HttpStatus.OK);
     }
 
 

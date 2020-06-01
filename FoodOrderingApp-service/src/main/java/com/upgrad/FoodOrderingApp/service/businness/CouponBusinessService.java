@@ -13,15 +13,15 @@ public class CouponBusinessService {
     @Autowired
     CouponDao couponDao;
 
-    public CouponEntity getCouponByName(String couponName){
-      return couponDao.getCouponByName(couponName);
+    public CouponEntity getCouponByName(String couponName) {
+        return couponDao.getCouponByName(couponName);
     }
 
     public CustomerAuthEntity getCustomerByAccessToken(String access_token) {
         return couponDao.getCustomerByAccessToken(access_token);
     }
 
-     public CouponEntity getCouponByUUID(String uuid){
+    public CouponEntity getCouponByUUID(String uuid) {
         return couponDao.getCouponByUUID(uuid);
-     }
+    }
 }
