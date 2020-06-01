@@ -8,6 +8,7 @@ import com.upgrad.FoodOrderingApp.api.model.StatesListResponse;
 import com.upgrad.FoodOrderingApp.service.businness.AddressService;
 import com.upgrad.FoodOrderingApp.service.businness.CustomerService;
 import com.upgrad.FoodOrderingApp.service.entity.AddressEntity;
+import com.upgrad.FoodOrderingApp.service.entity.CustomerAddressEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import com.upgrad.FoodOrderingApp.service.entity.StateEntity;
 import com.upgrad.FoodOrderingApp.service.exception.AddressNotFoundException;
@@ -26,6 +27,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Collections;
 import java.util.UUID;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -315,14 +317,15 @@ public class AddressControllerTest {
 
         final AddressEntity addressEntity = new AddressEntity();
         final String addressUuid = UUID.randomUUID().toString();
+        final CustomerAddressEntity customerAddressEntity = new CustomerAddressEntity();
         addressEntity.setUuid(addressUuid);
         addressEntity.setPincode("100000");
         addressEntity.setCity("city");
         addressEntity.setLocality("locality");
-        addressEntity.setFlatBuilNo("flatBuildNo");
+        addressEntity.setFlatBuildingNumber("flatBuildNo");
         final String stateUuid = UUID.randomUUID().toString();
         addressEntity.setState(new StateEntity(stateUuid, "state"));
-        when(mockAddressService.getAllAddress(customerEntity)).thenReturn(Collections.singletonList(addressEntity));
+        when(mockAddressService.getAllAddress(customerEntity)).thenReturn(Collections.singletonList(customerAddressEntity));
 
         final String response = mockMvc
                 .perform(get("/address/customer")
@@ -360,7 +363,7 @@ public class AddressControllerTest {
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("code").value("ATHR-001"));
         verify(mockCustomerService, times(1)).getCustomer("non_existing_access_token");
-        verify(mockAddressService, times(0)).getAllAddress(any());
+        verify(mockAddressService, times(0)).getAllAddress("test");
     }
 
     //This test case passes when you have handled the exception of trying to fetch addresses for any customer with while
@@ -377,7 +380,7 @@ public class AddressControllerTest {
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("code").value("ATHR-002"));
         verify(mockCustomerService, times(1)).getCustomer("database_accesstoken");
-        verify(mockAddressService, times(0)).getAllAddress(any());
+        verify(mockAddressService, times(0)).getAllAddress(any().toString());
     }
 
     //This test case passes when you have handled the exception of trying to fetch addresses for any customer while
@@ -394,7 +397,7 @@ public class AddressControllerTest {
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("code").value("ATHR-003"));
         verify(mockCustomerService, times(1)).getCustomer("database_accesstoken1");
-        verify(mockAddressService, times(0)).getAllAddress(any());
+        verify(mockAddressService, times(0)).getAllAddress("test");
     }
 
     // ------------------------------------------ GET /states ------------------------------------------

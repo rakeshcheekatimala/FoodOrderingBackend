@@ -74,19 +74,33 @@ public class AddressController {
         return new ResponseEntity<SaveAddressResponse>(saveAddressResponse, HttpStatus.OK);
     }
 
-    @RequestMapping(method = RequestMethod.DELETE, path = "/address/{address_id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE,consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<DeleteAddressResponse> deleteAddress(@PathVariable String address_id) throws AddressNotFoundException{
+    @RequestMapping(method = RequestMethod.DELETE, path = "/address/{address_id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<DeleteAddressResponse> deleteAddress(@PathVariable String address_id,@RequestHeader("authorization") final String authorization) throws AddressNotFoundException, AuthorizationFailedException, AuthenticationFailedException {
         // Calls the getAllStates from addressService to get the list of stateEntity
+        final BearerAuthDecoder authDecoder = new BearerAuthDecoder(authorization);
+        String accessToken = authDecoder.getAccessToken();
+        CustomerAuthEntity customerAuthEntity = customerAuthService.getCustomerByToken(accessToken);
+        Boolean isAuthorizedUser = customerAuthService.isAuthorizedUser(accessToken,customerAuthEntity);
+
         if(StringUtils.isEmpty(address_id)){
             throw new AddressNotFoundException("ANF-005","Address id can not be empty");
         }
+
         AddressEntity addressEntity = addressService.getAddressByUUID(address_id);
 
         if (addressEntity == null) {
             throw new AddressNotFoundException("ANF-003", "No address by this id.");
         }
 
+
+        CustomerAddressEntity customerAddressEntity = addressService.getCustomerAddress(customerAuthEntity.getCustomer(), addressEntity);
+
+        if (customerAddressEntity == null) {
+            throw new AuthorizationFailedException("ATHR-004", "You are not authorized to view/update/delete any one else's address");
+        }
+
         AddressEntity deletedEntity = addressService.deleteAddress(addressEntity);
+
         DeleteAddressResponse deleteAddressResponse = new DeleteAddressResponse().id(UUID.fromString(deletedEntity.getUuid()))
                 .status("ADDRESS DELETED SUCCESSFULLY");
 

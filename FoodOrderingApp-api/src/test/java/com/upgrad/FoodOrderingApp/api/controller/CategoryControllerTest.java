@@ -138,5 +138,4 @@ public class CategoryControllerTest {
         verify(mockCategoryService, times(1)).getAllCategoriesOrderedByName();
     }
 
-
 }

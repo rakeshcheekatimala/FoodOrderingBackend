@@ -31,18 +31,59 @@ public class RestExceptionHandler {
                 HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler(AuthorizationFailedException.class)
-    public ResponseEntity<ErrorResponse> authenticationFailedException(AuthorizationFailedException exc , WebRequest request) {
-        return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exc.getCode()).
-                message(exc.getErrorMessage()),
-                HttpStatus.UNAUTHORIZED);
-    }
-
     @ExceptionHandler(CategoryNotFoundException.class)
     public ResponseEntity<ErrorResponse> categoryNotFoundException(CategoryNotFoundException exc , WebRequest request) {
         return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exc.getCode()).
                 message(exc.getErrorMessage()),
+                HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(CouponNotFoundException.class)
+    public ResponseEntity<ErrorResponse> couponNotFoundException(CouponNotFoundException exc, WebRequest request) {
+        return new ResponseEntity<ErrorResponse>(
+                new ErrorResponse().code(exc.getCode()).message(exc.getErrorMessage()), HttpStatus.NOT_FOUND
+        );
+    }
+
+    @ExceptionHandler(PaymentMethodNotFoundException.class)
+    public ResponseEntity<ErrorResponse> PaymentMethodNotFoundException(PaymentMethodNotFoundException exc, WebRequest request) {
+        return new ResponseEntity<ErrorResponse>(
+                new ErrorResponse().code(exc.getCode()).message(exc.getErrorMessage()), HttpStatus.NOT_FOUND
+        );
+    }
+
+
+    @ExceptionHandler(SignUpRestrictedException.class)
+    public ResponseEntity<ErrorResponse> SignUpRestrictedException(SignUpRestrictedException exc, WebRequest request) {
+        return new ResponseEntity<ErrorResponse>(
+                new ErrorResponse().code(exc.getCode()).message(exc.getErrorMessage()), HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler(AuthorizationFailedException.class)
+    public ResponseEntity<ErrorResponse> AuthorizationFailedException(AuthorizationFailedException exc , WebRequest request) {
+        return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exc.getCode()).
+                message(exc.getErrorMessage()),
                 HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(SaveAddressException.class)
+    public ResponseEntity<ErrorResponse> SaveAddressException(SaveAddressException exc , WebRequest request) {
+        return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exc.getCode()).
+                message(exc.getErrorMessage()),
+                HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ItemNotFoundException.class)
+    public ResponseEntity<ErrorResponse> ItemNotFoundException(ItemNotFoundException exc, WebRequest request) {
+        return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exc.getCode()).message(exc.getErrorMessage()), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(UpdateCustomerException.class)
+    public ResponseEntity<ErrorResponse> UpdateCustomerException(UpdateCustomerException exc, WebRequest request) {
+        return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(exc.getCode()).message(exc.getErrorMessage()), HttpStatus.BAD_REQUEST);
+    }
+
 }
+
+

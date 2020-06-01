@@ -9,6 +9,7 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "item")
+@NamedQuery(name="getItemByuuid",query="select u from ItemEntity u where u.uuid=:uuid")
 public class ItemEntity implements Serializable {
     @Id
     @Column(name = "ID")
