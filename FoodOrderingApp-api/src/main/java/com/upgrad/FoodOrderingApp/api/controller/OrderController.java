@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -52,7 +51,7 @@ public class OrderController {
         }
         CouponDetailsResponse couponDetailsResponse = new CouponDetailsResponse().id(UUID.fromString(couponEntity.getUuid())).couponName(couponEntity.getCouponName()).percent(couponEntity.getPercent());
 
-        return new ResponseEntity<CouponDetailsResponse>(couponDetailsResponse, HttpStatus.OK);
+        return new ResponseEntity<>(couponDetailsResponse, HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/order", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -93,10 +92,11 @@ public class OrderController {
 
 
             List<ItemQuantityResponse> itemQuantityResponsesList = new ArrayList<ItemQuantityResponse>();
-            for (OrderItemEntity item : orderItemEntity) {
-                if (order.getId() == item.getOrders().getId()) {
-                    ItemQuantityResponseItem itemQuantityResponseItem = new ItemQuantityResponseItem().id(UUID.fromString(item.getItem().getUuid())).itemName(item.getItem().getItemName()).itemPrice(item.getItem().getPrice());
-                    ItemQuantityResponse itemQuantityResponse = new ItemQuantityResponse().item(itemQuantityResponseItem).quantity(item.getQuantity()).price(item.getPrice());
+            for (OrderItemEntity orderItemEntity1 : orderItemEntity) {
+
+                if (order.getId() == orderItemEntity1.getOrders().getId()) {
+                    ItemQuantityResponseItem itemQuantityResponseItem = new ItemQuantityResponseItem().id(UUID.fromString(orderItemEntity1.getItem().getUuid())).itemName(orderItemEntity1.getItem().getItemName()).itemPrice(orderItemEntity1.getItem().getPrice());
+                    ItemQuantityResponse itemQuantityResponse = new ItemQuantityResponse().item(itemQuantityResponseItem).quantity(orderItemEntity1.getQuantity()).price(orderItemEntity1.getPrice());
                     itemQuantityResponsesList.add(itemQuantityResponse);
                 }
             }
@@ -105,7 +105,7 @@ public class OrderController {
 
             orderList.add(orderList1);
         }
-        return new ResponseEntity<List<OrderList>>(orderList, HttpStatus.OK);
+        return new ResponseEntity<>(orderList, HttpStatus.OK);
 
     }
 
@@ -126,15 +126,18 @@ public class OrderController {
         }
         CouponEntity couponEntity = null;
         if (saveOrderRequest.getCouponId() != null) {
-            
-            couponEntity = couponBusinessService.getCouponByUUID(saveOrderRequest.getCouponId().toString());
+            String CouponId = saveOrderRequest.getCouponId().toString();
+
+            couponEntity = couponBusinessService.getCouponByUUID(CouponId);
+
             if (couponEntity == null) {
                 throw new CouponNotFoundException("CPF-002", "No coupon by this id");
             }
+
         }
         AddressEntity addressEntity = null;
         if (saveOrderRequest.getAddressId() != null) {
-            addressEntity = orderBusinessService.getAddressByUUID(saveOrderRequest.getAddressId().toString());
+            addressEntity = orderBusinessService.getAddressByUUID(saveOrderRequest.getAddressId());
             if (addressEntity == null) {
                 throw new AddressNotFoundException("ANF-003", "No address by this id");
             }
@@ -166,31 +169,29 @@ public class OrderController {
         ordersEntity.setDate(ZonedDateTime.now());
         ordersEntity.setUuid(UUID.randomUUID().toString());
         ordersEntity = orderBusinessService.saveOrder(ordersEntity);
-        List<OrderItemEntity> orderItemEntities = new ArrayList<>();
 
+        Boolean isSaved = false;
         if (saveOrderRequest.getItemQuantities() != null) {
             List<ItemQuantity> itemQuantityList = saveOrderRequest.getItemQuantities();
-            for (ItemQuantity item : itemQuantityList) {
-                ItemEntity itemEntity = orderBusinessService.getItemByuuid(item.getItemId().toString());
-                if (itemEntity == null) {
-                    throw new ItemNotFoundException("INF-003", "No item by this id exist");
-                }
-                OrderItemEntity orderItemEntity = new OrderItemEntity();
-                orderItemEntity.setItem(itemEntity);
-                orderItemEntity.setOrders(ordersEntity);
-                orderItemEntity.setQuantity(item.getQuantity());
-                orderItemEntity.setPrice(item.getPrice());
-                orderItemEntities.add(orderItemEntity);
 
-
+            ItemEntity itemEntity = orderBusinessService.getItemByuuid(itemQuantityList.get(0).getItemId().toString());
+            if (itemEntity == null) {
+                throw new ItemNotFoundException("INF-003", "No item by this id exist");
             }
+
+            OrderItemEntity orderItemEntity = new OrderItemEntity();
+            orderItemEntity.setItem(itemEntity);
+            orderItemEntity.setOrders(ordersEntity);
+            orderItemEntity.setQuantity(itemQuantityList.get(0).getQuantity());
+            orderItemEntity.setPrice(itemQuantityList.get(0).getPrice());
+            isSaved = orderBusinessService.saveOrderItem(orderItemEntity);
+
         }
 
 
-        Boolean isSaved = orderBusinessService.saveOrderItem(orderItemEntities);
         if (isSaved) {
             SaveOrderResponse saveOrderResponse = new SaveOrderResponse().id(ordersEntity.getUuid()).status("ORDER SUCCESSFULLY PLACED");
-            return new ResponseEntity<SaveOrderResponse>(saveOrderResponse, HttpStatus.OK);
+            return new ResponseEntity<>(saveOrderResponse, HttpStatus.OK);
         }
 
         return null;

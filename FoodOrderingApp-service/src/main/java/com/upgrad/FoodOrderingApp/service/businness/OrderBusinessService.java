@@ -41,8 +41,8 @@ public class OrderBusinessService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public Boolean saveOrderItem(List<OrderItemEntity> orderItemEntities) {
-        return orderDao.saveOrderItem(orderItemEntities);
+    public Boolean saveOrderItem(OrderItemEntity orderItemEntity) {
+        return orderDao.saveOrderItem(orderItemEntity);
     }
 
     @Transactional(propagation = Propagation.REQUIRED)

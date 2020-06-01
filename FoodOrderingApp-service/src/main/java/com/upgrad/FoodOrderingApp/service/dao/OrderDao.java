@@ -50,7 +50,7 @@ public class OrderDao {
         }
     }
 
-    public Boolean saveOrderItem(List<OrderItemEntity> orderItemEntities) {
+    public Boolean saveOrderItem(OrderItemEntity orderItemEntities) {
         em.persist(orderItemEntities);
         return true;
     }

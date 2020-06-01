@@ -35,7 +35,7 @@ public class PaymentController {
             paymentResponseList.add(paymentResponse);
         }
         PaymentListResponse paymentListResponse = new PaymentListResponse().paymentMethods(paymentResponseList);
-        return new ResponseEntity<PaymentListResponse>(paymentListResponse, HttpStatus.OK);
+        return new ResponseEntity<>(paymentListResponse, HttpStatus.OK);
     }
 
 
