@@ -197,4 +197,8 @@ public class CustomerService {
         return  customerDao.logout(customerAuthEntity);
     }
 
+    public CustomerAuthEntity logout(String accessToken){
+        CustomerAuthEntity customerAuthEntity = customerAuthDao.getCustomerByToken(accessToken);
+        return  customerDao.logout(customerAuthEntity);
+    }
 }

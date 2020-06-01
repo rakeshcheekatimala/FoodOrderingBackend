@@ -53,5 +53,14 @@ public class StateEntity implements Serializable {
         this.stateName = stateName;
     }
 
+    public StateEntity(String stateUuid, String stateName) {
+        this.uuid = stateUuid;
+        this.stateName = stateName;
+        return;
+    }
+
+    public StateEntity() {
+
+    }
 }
 

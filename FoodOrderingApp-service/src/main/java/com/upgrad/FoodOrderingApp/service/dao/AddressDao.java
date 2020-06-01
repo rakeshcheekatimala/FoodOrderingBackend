@@ -48,6 +48,7 @@ public class AddressDao {
         }
     }
 
+    @Transactional
     public AddressEntity deleteAddress(AddressEntity addressEntity) {
         entityManager.remove(addressEntity);
         return addressEntity;
@@ -69,7 +70,7 @@ public class AddressDao {
 
     public CustomerAddressEntity getCustomerAddress( CustomerEntity customerEntity, final AddressEntity addressEntity) {
         try {
-            return entityManager.createNamedQuery("custAddressByCustIdAddressId", CustomerAddressEntity.class)
+            return entityManager.createNamedQuery("CustomerAddressEntity.getCustomerAddressByAddressEntity", CustomerAddressEntity.class)
                     .setParameter("customer", customerEntity).setParameter( "address", addressEntity)
                     .getSingleResult();
         } catch(NoResultException nre) {

@@ -1,11 +1,16 @@
 package com.upgrad.FoodOrderingApp.service.entity;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "customer_address")
 @NamedQueries({
         @NamedQuery(name = "CustomerAddressEntity.findAddressByCustomerId", query = "select ca from CustomerAddressEntity ca where ca.customer.uuid=:uuid"),
+        @NamedQuery(name = "CustomerAddressEntity.getCustomerAddressByAddressEntity",query = "select ca from CustomerAddressEntity ca where ca.customer=:customer and ca.address=:address")
+
 })
 
 public class CustomerAddressEntity {
@@ -19,7 +24,8 @@ public class CustomerAddressEntity {
     @JoinColumn(name = "customer_id")
     private CustomerEntity customer;
 
-    @ManyToOne(cascade=CascadeType.ALL)
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "address_id")
     private AddressEntity address;
 
