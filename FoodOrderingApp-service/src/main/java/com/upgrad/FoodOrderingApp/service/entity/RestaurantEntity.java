@@ -11,7 +11,8 @@ import java.util.List;
 @Table(name="restaurant")
 @NamedQueries(
         {
-                @NamedQuery(name = "RestaurantEntity.findAll", query = "select r from RestaurantEntity r order by r.customerRating desc")
+                @NamedQuery(name = "RestaurantEntity.findAll", query = "select r from RestaurantEntity r order by r.customerRating desc"),
+                @NamedQuery(name="getRestaurantByuuid",query="select u from RestaurantEntity  u where u.uuid=:uuid")
         }
 )
 

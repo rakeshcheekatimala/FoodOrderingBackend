@@ -1,9 +1,11 @@
 package com.upgrad.FoodOrderingApp.service.entity;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "order_item")
+@NamedQuery(name="getOrderDetails",query="select u from OrderItemEntity u where u.orders.id in :ordersid ")
 public class OrderItemEntity {
     @Id
     @Column(name = "ID")
@@ -15,7 +17,7 @@ public class OrderItemEntity {
     private OrdersEntity orders;
 
     @ManyToOne
-    @JoinColumn(name = "item_id")
+    @JoinColumn(name = "item_id" , referencedColumnName = "id")
     private ItemEntity item;
 
     @Column(name = "QUANTITY")
@@ -24,9 +26,24 @@ public class OrderItemEntity {
     @Column(name="PRICE")
     private Integer price;
 
-    public long getId() {
-        return id;
+    public ItemEntity getItem() {
+        return item;
     }
+
+    public void setItem(ItemEntity item) {
+        this.item = item;
+    }
+//    public void setItem(List<ItemEntity> item) {
+//        this.item = item;
+//    }
+//
+//    public long getId() {
+//        return id;
+//    }
+//
+//    public List<ItemEntity> getItem() {
+//        return item;
+//    }
 
     public void setId(long id) {
         this.id = id;
@@ -40,13 +57,6 @@ public class OrderItemEntity {
         this.orders = orders;
     }
 
-    public ItemEntity getItem() {
-        return item;
-    }
-
-    public void setItem(ItemEntity item) {
-        this.item = item;
-    }
 
     public Integer getQuantity() {
         return quantity;

@@ -12,6 +12,10 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "coupon")
+@NamedQueries({
+  @NamedQuery(  name="couponByname", query="select u from CouponEntity u where u.couponName=:couponName"),
+  @NamedQuery (name="getCouponByUUID", query="select u from CouponEntity  u where u.uuid=:uuid")
+        })
 public class CouponEntity implements Serializable {
 
     @Id
@@ -25,7 +29,18 @@ public class CouponEntity implements Serializable {
 
     @Column(name = "UUID")
     @Size(max = 200)
-    private UUID uuid;
+    private String uuid;
+
+      @Column(name="percent")
+      private int percent;
+
+    public int getPercent() {
+        return percent;
+    }
+
+    public void setPercent(int percent) {
+        this.percent = percent;
+    }
 
     public long getId() {
         return id;
@@ -43,11 +58,11 @@ public class CouponEntity implements Serializable {
         this.couponName = couponName;
     }
 
-    public UUID getUuid() {
+    public String getUuid() {
         return uuid;
     }
 
-    public void setUuid(UUID uuid) {
+    public void setUuid(String uuid) {
         this.uuid = uuid;
     }
 
