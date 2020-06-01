@@ -46,6 +46,10 @@ public class CustomerController {
     public ResponseEntity<LoginResponse> login(@RequestHeader("authorization") String authorization) throws AuthenticationFailedException {
         final BasicAuthDecoder basicAuthDecoder = new BasicAuthDecoder(authorization);
 
+        if(basicAuthDecoder==null) {
+            throw  new AuthenticationFailedException("ATH-003","Incorrect format of decoded customer name and password");
+        }
+
         // authenticate service method needs contactNumber & password
         // if both matches they would set the token and send the entity back
 

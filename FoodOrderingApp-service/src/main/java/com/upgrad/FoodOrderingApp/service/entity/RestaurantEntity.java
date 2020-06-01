@@ -9,14 +9,12 @@ import java.util.List;
 
 @Entity
 @Table(name="restaurant")
-@NamedQueries(
-        {
-                @NamedQuery(name = "RestaurantEntity.findAll", query = "select r from RestaurantEntity r order by r.customerRating desc"),
-                @NamedQuery(name = "RestaurantEntity.findByName", query = "select r from RestaurantEntity  r where  lower(r.restaurantName) like CONCAT(:restaurantName,'%')"),
-                @NamedQuery(name = "RestaurantEntity.byUUid", query = "SELECT r FROM RestaurantEntity r where r.uuid=:uuid")
-
-        }
-)
+@NamedQueries({
+        @NamedQuery(name = "RestaurantEntity.findAll", query = "select r from RestaurantEntity r order by r.customerRating desc"),
+        @NamedQuery(name = "RestaurantEntity.findByName", query = "select r from RestaurantEntity  r where  lower(r.restaurantName) like CONCAT(:restaurantName,'%')"),
+        @NamedQuery(name = "RestaurantEntity.byUUid", query = "SELECT r FROM RestaurantEntity r where r.uuid=:uuid"),
+        @NamedQuery(name="getRestaurantByuuid",query="select u from RestaurantEntity  u where u.uuid=:uuid")
+})
 
 public class RestaurantEntity implements Serializable {
     private static final long serialVersionUID = 1L;

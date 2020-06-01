@@ -3,9 +3,14 @@ package com.upgrad.FoodOrderingApp.service.entity;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.UUID;
 
 @Entity
 @Table(name="payment")
+@NamedQueries({
+        @NamedQuery(name = "GetPaymentMethods", query = "select u from PaymentEntity  u "),
+        @NamedQuery(name="getPaymentByUUID",query = "select u from PaymentEntity  u where u.uuid=:uuid")
+})
 public class PaymentEntity {
     @Id
     @Column(name = "ID")
@@ -13,8 +18,6 @@ public class PaymentEntity {
     private Long id;
 
     @Column(name = "UUID")
-    @Size(max = 200)
-    @NotNull
     private String uuid;
 
     @Column(name = "PAYMENT_NAME")
@@ -26,10 +29,6 @@ public class PaymentEntity {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getUuid() {
         return uuid;
     }
@@ -37,6 +36,12 @@ public class PaymentEntity {
     public void setUuid(String uuid) {
         this.uuid = uuid;
     }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+
 
     public String getPaymentName() {
         return paymentName;

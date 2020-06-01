@@ -43,14 +43,6 @@ public class CustomerAuthEntity implements Serializable {
     @JoinColumn(name = "customer_id")
     private CustomerEntity customer;
 
-    public CustomerEntity getCustomer() {
-        return customer;
-    }
-
-    public void setCustomer(CustomerEntity customer) {
-        this.customer = customer;
-    }
-
     public Long getId() {
         return id;
     }
@@ -97,5 +89,13 @@ public class CustomerAuthEntity implements Serializable {
 
     public void setExpiresAt(ZonedDateTime expiresAt) {
         this.expiresAt = expiresAt;
+    }
+
+    public CustomerEntity getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(CustomerEntity customer) {
+        this.customer = customer;
     }
 }

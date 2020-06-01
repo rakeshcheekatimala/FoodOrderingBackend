@@ -6,11 +6,14 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "orders")
 @NamedQueries({
-        @NamedQuery(name = "OrdersEntity.getAllOrdersByRestaurantId", query = "SELECT o from OrdersEntity o where o.restaurant.uuid = :restaurantUUID")
+        @NamedQuery(name = "OrdersEntity.getAllOrdersByRestaurantId", query = "SELECT o from OrdersEntity o where o.restaurant.uuid = :restaurantUUID"),
+        @NamedQuery(name="getOrders", query="Select o from OrdersEntity o where o.customer.id=:custid")
 })
 public class OrdersEntity implements Serializable {
 
