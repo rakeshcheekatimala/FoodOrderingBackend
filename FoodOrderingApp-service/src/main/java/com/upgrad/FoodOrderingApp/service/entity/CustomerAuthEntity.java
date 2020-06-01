@@ -8,6 +8,7 @@ import java.time.ZonedDateTime;
 
 @Entity
 @Table(name="customer_auth")
+@NamedQuery(name="customerAuthByAccessToken",query="Select u from CustomerAuthEntity  u where u.accessToken=:accessToken")
 public class CustomerAuthEntity implements Serializable {
     @Id
     @Column(name="ID")
@@ -33,6 +34,14 @@ public class CustomerAuthEntity implements Serializable {
     @Column(name = "EXPIRES_AT")
     @NotNull
     private ZonedDateTime expiresAt;
+
+    public CustomerEntity getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(CustomerEntity customer) {
+        this.customer = customer;
+    }
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
