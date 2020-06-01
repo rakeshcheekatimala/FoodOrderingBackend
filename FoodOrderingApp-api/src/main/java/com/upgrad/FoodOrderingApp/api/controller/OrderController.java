@@ -111,8 +111,12 @@ public class OrderController {
             for (OrderItemEntity orderItemEntity1 : orderItemEntity) {
 
                 if (order.getId() == orderItemEntity1.getOrders().getId()) {
+
                     ItemQuantityResponseItem itemQuantityResponseItem = new ItemQuantityResponseItem().id(UUID.fromString(orderItemEntity1.getItem().getUuid())).itemName(orderItemEntity1.getItem().getItemName()).itemPrice(orderItemEntity1.getItem().getPrice());
                     ItemQuantityResponse itemQuantityResponse = new ItemQuantityResponse().item(itemQuantityResponseItem).quantity(orderItemEntity1.getQuantity()).price(orderItemEntity1.getPrice());
+                    String item = orderItemEntity1.getItem().getType().getValue();
+
+                    itemQuantityResponse.getItem().setType(ItemQuantityResponseItem.TypeEnum.valueOf(item));
                     itemQuantityResponsesList.add(itemQuantityResponse);
                 }
             }
