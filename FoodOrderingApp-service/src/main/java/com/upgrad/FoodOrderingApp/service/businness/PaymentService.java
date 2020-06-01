@@ -9,11 +9,15 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class PaymentBusinessService {
+public class PaymentService {
     @Autowired
     PaymentDao paymentDao;
 
     public List<PaymentEntity> getAllPaymentMethods() {
         return paymentDao.getAllPaymentMethods();
+    }
+
+    public PaymentEntity getPaymentByUUID(String uuid) {
+        return paymentDao.getPaymentByUUID(uuid);
     }
 }

@@ -34,6 +34,9 @@ public class CouponEntity implements Serializable {
       @Column(name="percent")
       private int percent;
 
+    public CouponEntity(String couponId, String myCoupon, int i) {
+    }
+
     public int getPercent() {
         return percent;
     }

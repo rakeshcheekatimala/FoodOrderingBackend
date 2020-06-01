@@ -3,7 +3,7 @@ package com.upgrad.FoodOrderingApp.api.controller;
 
 import com.upgrad.FoodOrderingApp.api.model.PaymentListResponse;
 import com.upgrad.FoodOrderingApp.api.model.PaymentResponse;
-import com.upgrad.FoodOrderingApp.service.businness.PaymentBusinessService;
+import com.upgrad.FoodOrderingApp.service.businness.PaymentService;
 import com.upgrad.FoodOrderingApp.service.entity.PaymentEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,12 +22,12 @@ import java.util.UUID;
 public class PaymentController {
 
     @Autowired
-    PaymentBusinessService paymentBusinessService;
+    PaymentService paymentService;
 
     @RequestMapping(method = RequestMethod.GET, path = "/payment", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<PaymentListResponse> getAllPaymentMethods() {
 
-        List<PaymentEntity> paymentEntityList = paymentBusinessService.getAllPaymentMethods();
+        List<PaymentEntity> paymentEntityList = paymentService.getAllPaymentMethods();
 
         List<PaymentResponse> paymentResponseList = new ArrayList<PaymentResponse>();
         for (PaymentEntity paymentEntity : paymentEntityList) {
