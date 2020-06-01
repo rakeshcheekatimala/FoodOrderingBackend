@@ -42,6 +42,11 @@ public class AddressEntity {
 
     @Column(name = "active")
     private Integer active;
+    public AddressEntity(){
+
+    }
+    public AddressEntity(String addressId, String s, String someLocality, String someCity, String s1, StateEntity stateEntity) {
+    }
 
     public long getId() {
         return id;

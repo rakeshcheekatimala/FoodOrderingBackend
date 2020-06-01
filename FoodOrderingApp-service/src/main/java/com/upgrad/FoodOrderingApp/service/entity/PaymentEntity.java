@@ -24,6 +24,9 @@ public class PaymentEntity {
     @Size(max = 255)
     @NotNull
     private String paymentName;
+public PaymentEntity(){}
+    public PaymentEntity(String paymentId, String spmePayment) {
+    }
 
     public Long getId() {
         return id;

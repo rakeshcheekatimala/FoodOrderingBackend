@@ -43,13 +43,14 @@ public class OrderController {
         Boolean isAuthorizedUser = customerAuthService.isAuthorizedUser(accessToken,customerAuthEntity);
 
 
-        if (customerAuthEntity == null) {
+
+        if (!isAuthorizedUser) {
             throw new AuthorizationFailedException("ATHR-001", "Customer is not Logged in");
         }
         if (customerAuthEntity.getLogoutAt() != null) {
             throw new AuthorizationFailedException("ATHR-002", "Customer is logged out. Log in again to access this endpoint");
         }
-        if (customerAuthEntity.getExpiresAt() != null) {
+        if (customerAuthEntity.getExpiresAt().isBefore(ZonedDateTime.now())) {
             throw new AuthorizationFailedException("ATHR-003", "Your session is expired. Log in again to access this endpoint");
         }
         if (couponName == "" || couponName == null) {
@@ -72,16 +73,16 @@ public class OrderController {
         Boolean isAuthorizedUser = customerAuthService.isAuthorizedUser(accessToken,customerAuthEntity);
 
 
-        if (customerAuthEntity == null) {
+        if (!isAuthorizedUser) {
             throw new AuthorizationFailedException("ATHR-001", "Customer is not Logged in");
         }
         if (customerAuthEntity.getLogoutAt() != null) {
             throw new AuthorizationFailedException("ATHR-002", "Customer is logged out. Log in again to access this endpoint");
         }
-        if (customerAuthEntity.getExpiresAt() != null) {
+        if (customerAuthEntity.getExpiresAt().isBefore(ZonedDateTime.now())) {
             throw new AuthorizationFailedException("ATHR-003", "Your session is expired. Log in again to access this endpoint");
         }
-        List<OrdersEntity> orders = orderService.getOrders(customerAuthEntity.getCustomer().getId());
+        List<OrdersEntity> orders = orderService.getOrdersByCustomers(customerAuthEntity.getCustomer().getUuid());
         ArrayList<Long> orderids = new ArrayList<>();
         for (OrdersEntity order : orders) {
             orderids.add(order.getId());
@@ -133,13 +134,13 @@ public class OrderController {
         Boolean isAuthorizedUser = customerAuthService.isAuthorizedUser(accessToken,customerAuthEntity);
 
 
-        if (customerAuthEntity == null) {
+        if (!isAuthorizedUser) {
             throw new AuthorizationFailedException("ATHR-001", "Customer is not Logged in");
         }
         if (customerAuthEntity.getLogoutAt() != null) {
             throw new AuthorizationFailedException("ATHR-002", "Customer is logged out. Log in again to access this endpoint");
         }
-        if (customerAuthEntity.getExpiresAt() != null) {
+        if (customerAuthEntity.getExpiresAt().isBefore(ZonedDateTime.now())) {
             throw new AuthorizationFailedException("ATHR-003", "Your session is expired. Log in again to access this endpoint");
         }
         CouponEntity couponEntity = null;
@@ -153,15 +154,20 @@ public class OrderController {
             }
 
         }
-        AddressEntity addressEntity = null;
-        if (saveOrderRequest.getAddressId() != null) {
-            addressEntity = orderService.getAddressByUUID(saveOrderRequest.getAddressId());
-            if (addressEntity == null) {
-                throw new AddressNotFoundException("ANF-003", "No address by this id");
-            }
+
+        AddressEntity addressEntity = addressService.getAddressByUUID(saveOrderRequest.getAddressId());
+
+        if (addressEntity == null) {
+            throw new AddressNotFoundException("ANF-003", "No address by this id.");
         }
-//        CustomerAddressEntity customerAddressEntity= addressService.getCustomerAddress(customerAuthEntity.getCustomer().getUuid(),addressEntity);
-//        if(addressEntity.getUuid()== )
+
+
+        CustomerAddressEntity customerAddressEntity = addressService.getCustomerAddress(customerAuthEntity.getCustomer(), addressEntity);
+
+        if (customerAddressEntity == null) {
+            throw new AuthorizationFailedException("ATHR-004", "You are not authorized to view/update/delete any one else's address");
+        }
+
         PaymentEntity paymentEntity = null;
         if (saveOrderRequest.getPaymentId() != null) {
             paymentEntity = paymentService.getPaymentByUUID(saveOrderRequest.getPaymentId().toString());
@@ -204,12 +210,12 @@ public class OrderController {
             orderItemEntity.setOrders(ordersEntity);
             orderItemEntity.setQuantity(itemQuantityList.get(0).getQuantity());
             orderItemEntity.setPrice(itemQuantityList.get(0).getPrice());
-            isSaved = orderService.saveOrderItem(orderItemEntity);
+            orderItemEntity = orderService.saveOrderItem(orderItemEntity);
 
         }
 
 
-        if (isSaved) {
+        if (ordersEntity != null) {
             SaveOrderResponse saveOrderResponse = new SaveOrderResponse().id(ordersEntity.getUuid()).status("ORDER SUCCESSFULLY PLACED");
             return new ResponseEntity<>(saveOrderResponse, HttpStatus.OK);
         }

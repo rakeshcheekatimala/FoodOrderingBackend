@@ -24,7 +24,7 @@ public class OrderDao {
         }
     }
 
-    public List<OrdersEntity> getOrders(int id) {
+    public List<OrdersEntity> getOrders(String id) {
 
         try {
             return em.createNamedQuery("getOrders", OrdersEntity.class).setParameter("custid", id).getResultList();
@@ -50,9 +50,9 @@ public class OrderDao {
         }
     }
 
-    public Boolean saveOrderItem(OrderItemEntity orderItemEntities) {
+    public OrderItemEntity saveOrderItem(OrderItemEntity orderItemEntities) {
         em.persist(orderItemEntities);
-        return true;
+        return orderItemEntities;
     }
 
     public OrdersEntity saveOrder(OrdersEntity orderEntity) {

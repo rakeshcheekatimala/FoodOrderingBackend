@@ -30,7 +30,7 @@ public class OrderItemEntity {
 
     @Column(name="PRICE")
     private Integer price;
-
+    public OrderItemEntity(){}
     public ItemEntity getItem() {
         return item;
     }
