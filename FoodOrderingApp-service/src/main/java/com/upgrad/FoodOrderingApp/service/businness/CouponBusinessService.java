@@ -21,7 +21,7 @@ public class CouponBusinessService {
         return couponDao.getCustomerByAccessToken(access_token);
     }
 
-     public CouponEntity getCouponByUUID(UUID uuid){
-        return couponDao.getCouponByUUID(uuid.toString());
+     public CouponEntity getCouponByUUID(String uuid){
+        return couponDao.getCouponByUUID(uuid);
      }
 }

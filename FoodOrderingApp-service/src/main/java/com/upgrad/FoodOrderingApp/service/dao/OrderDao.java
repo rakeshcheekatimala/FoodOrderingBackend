@@ -1,10 +1,7 @@
 package com.upgrad.FoodOrderingApp.service.dao;
 
 
-import com.upgrad.FoodOrderingApp.service.entity.AddressEntity;
-import com.upgrad.FoodOrderingApp.service.entity.OrderItemEntity;
-import com.upgrad.FoodOrderingApp.service.entity.OrdersEntity;
-import com.upgrad.FoodOrderingApp.service.entity.RestaurantEntity;
+import com.upgrad.FoodOrderingApp.service.entity.*;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -55,9 +52,24 @@ public class OrderDao {
             return null;
         }
     }
-    public OrderItemEntity saveOrder(OrderItemEntity orderItemEntity)
+    public Boolean saveOrderItem(List<OrderItemEntity> orderItemEntities)
     {
-        em.persist(orderItemEntity);
-        return  orderItemEntity;
+        em.persist(orderItemEntities);
+        return  true;
+    }
+    public OrdersEntity saveOrder(OrdersEntity orderEntity)
+    {
+        em.persist(orderEntity);
+        return  orderEntity;
+    }
+
+
+    public ItemEntity getItemByuuid(String uuid){
+        try{
+            return em.createNamedQuery("getItemByuuid", ItemEntity.class).setParameter("uuid",uuid).getSingleResult();
+        }
+        catch(NoResultException nre){
+            return null;
+        }
     }
 }

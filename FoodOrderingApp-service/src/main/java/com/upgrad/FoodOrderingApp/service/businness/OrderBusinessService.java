@@ -41,8 +41,19 @@ public RestaurantEntity getRestaurantByUUID(String uuid){
 }
 
     @Transactional(propagation = Propagation.REQUIRED)
-public OrderItemEntity saveOrder(OrderItemEntity orderItemEntity)
+public Boolean saveOrderItem(List <OrderItemEntity> orderItemEntities)
 {
-    return orderDao.saveOrder(orderItemEntity);
+    return orderDao.saveOrderItem(orderItemEntities);
 }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public OrdersEntity saveOrder(OrdersEntity orderEntity)
+    {
+        return orderDao.saveOrder(orderEntity);
+    }
+
+
+    public ItemEntity getItemByuuid(String uuid){
+    return orderDao.getItemByuuid(uuid);
+    }
 }
