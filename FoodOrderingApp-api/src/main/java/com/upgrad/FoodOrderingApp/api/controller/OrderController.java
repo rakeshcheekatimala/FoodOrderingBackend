@@ -20,6 +20,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/")
+@CrossOrigin
 public class OrderController {
     @Autowired
     CouponBusinessService couponBusinessService;
@@ -66,7 +67,7 @@ public class OrderController {
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/order", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<List<OrderList>> getOrderEntity(@RequestHeader("authorization") final String authorization ) throws AuthorizationFailedException, AuthenticationFailedException {
+    public ResponseEntity getOrderEntity(@RequestHeader("authorization") final String authorization ) throws AuthorizationFailedException, AuthenticationFailedException {
         final BearerAuthDecoder authDecoder = new BearerAuthDecoder(authorization);
         String accessToken = authDecoder.getAccessToken();
         CustomerAuthEntity customerAuthEntity = customerAuthService.getCustomerByToken(accessToken);
@@ -97,8 +98,11 @@ public class OrderController {
 
         for (OrdersEntity order : orders) {
 
-            OrderListCoupon coupon = new OrderListCoupon().id(UUID.fromString(order.getCoupon().getUuid())).couponName(
-                    order.getCoupon().getCouponName()).percent(order.getCoupon().getPercent());
+            OrderListCoupon coupon = new OrderListCoupon();
+            if(order.getCoupon()!=null){
+                coupon.id(UUID.fromString(order.getCoupon().getUuid())).couponName(
+                        order.getCoupon().getCouponName()).percent(order.getCoupon().getPercent());
+            }
 
             OrderListPayment payment = new OrderListPayment().id(UUID.fromString(order.getPayment().getUuid())).paymentName(order.getPayment().getPaymentName());
 
@@ -126,6 +130,7 @@ public class OrderController {
             orderList.add(orderList1);
         }
         return new ResponseEntity<>(orderList, HttpStatus.OK);
+
 
     }
 
