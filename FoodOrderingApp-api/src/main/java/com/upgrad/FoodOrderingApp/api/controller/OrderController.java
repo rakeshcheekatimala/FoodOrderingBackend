@@ -1,10 +1,9 @@
 package com.upgrad.FoodOrderingApp.api.controller;
 
 
+import com.upgrad.FoodOrderingApp.api.controller.provider.BearerAuthDecoder;
 import com.upgrad.FoodOrderingApp.api.model.*;
-import com.upgrad.FoodOrderingApp.service.businness.CouponBusinessService;
-import com.upgrad.FoodOrderingApp.service.businness.OrderBusinessService;
-import com.upgrad.FoodOrderingApp.service.businness.PaymentBusinessService;
+import com.upgrad.FoodOrderingApp.service.businness.*;
 import com.upgrad.FoodOrderingApp.service.entity.*;
 import com.upgrad.FoodOrderingApp.service.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,27 +24,39 @@ public class OrderController {
     @Autowired
     CouponBusinessService couponBusinessService;
     @Autowired
-    PaymentBusinessService paymentBusinessService;
+    PaymentService paymentService;
     @Autowired
-    OrderBusinessService orderBusinessService;
+    OrderService orderService;
+
+    @Autowired
+    AddressService addressService;
+    @Autowired
+    CustomerAuthService customerAuthService;
 
 
     @RequestMapping(method = RequestMethod.GET, path = "/order/coupon/{coupon_name}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    ResponseEntity<CouponDetailsResponse> getCouponByName(@PathVariable("coupon_name") String couponName, @RequestHeader("access_token") String access_token) throws AuthorizationFailedException, CouponNotFoundException {
-        CustomerAuthEntity customerAuthEntity = couponBusinessService.getCustomerByAccessToken(access_token);
-        if (customerAuthEntity == null) {
+    ResponseEntity<CouponDetailsResponse> getCouponByCouponName(@PathVariable("coupon_name") String couponName, @RequestHeader("authorization") final String authorization) throws AuthorizationFailedException, CouponNotFoundException, AuthenticationFailedException {
+        // conditions to check all the values are not empty
+        final BearerAuthDecoder authDecoder = new BearerAuthDecoder(authorization);
+        String accessToken = authDecoder.getAccessToken();
+        CustomerAuthEntity customerAuthEntity = customerAuthService.getCustomerByToken(accessToken);
+        Boolean isAuthorizedUser = customerAuthService.isAuthorizedUser(accessToken,customerAuthEntity);
+
+
+
+        if (!isAuthorizedUser) {
             throw new AuthorizationFailedException("ATHR-001", "Customer is not Logged in");
         }
         if (customerAuthEntity.getLogoutAt() != null) {
             throw new AuthorizationFailedException("ATHR-002", "Customer is logged out. Log in again to access this endpoint");
         }
-        if (customerAuthEntity.getExpiresAt() != null) {
+        if (customerAuthEntity.getExpiresAt().isBefore(ZonedDateTime.now())) {
             throw new AuthorizationFailedException("ATHR-003", "Your session is expired. Log in again to access this endpoint");
         }
         if (couponName == "" || couponName == null) {
             throw new CouponNotFoundException("CPF-002", "Coupon name field should not be empty");
         }
-        CouponEntity couponEntity = couponBusinessService.getCouponByName(couponName);
+        CouponEntity couponEntity = couponBusinessService.getCouponByCouponName(couponName);
         if (couponEntity == null) {
             throw new CouponNotFoundException("CPF-001", "No coupon by this name");
         }
@@ -55,23 +66,28 @@ public class OrderController {
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/order", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<List<OrderList>> getOrderEntity(@RequestHeader("access-token") String accessToken) throws AuthorizationFailedException {
-        CustomerAuthEntity customerAuthEntity = couponBusinessService.getCustomerByAccessToken(accessToken);
-        if (customerAuthEntity == null) {
+    public ResponseEntity<List<OrderList>> getOrderEntity(@RequestHeader("authorization") final String authorization ) throws AuthorizationFailedException, AuthenticationFailedException {
+        final BearerAuthDecoder authDecoder = new BearerAuthDecoder(authorization);
+        String accessToken = authDecoder.getAccessToken();
+        CustomerAuthEntity customerAuthEntity = customerAuthService.getCustomerByToken(accessToken);
+        Boolean isAuthorizedUser = customerAuthService.isAuthorizedUser(accessToken,customerAuthEntity);
+
+
+        if (!isAuthorizedUser) {
             throw new AuthorizationFailedException("ATHR-001", "Customer is not Logged in");
         }
         if (customerAuthEntity.getLogoutAt() != null) {
             throw new AuthorizationFailedException("ATHR-002", "Customer is logged out. Log in again to access this endpoint");
         }
-        if (customerAuthEntity.getExpiresAt() != null) {
+        if (customerAuthEntity.getExpiresAt().isBefore(ZonedDateTime.now())) {
             throw new AuthorizationFailedException("ATHR-003", "Your session is expired. Log in again to access this endpoint");
         }
-        List<OrdersEntity> orders = orderBusinessService.getOrders(customerAuthEntity.getCustomer().getId());
+        List<OrdersEntity> orders = orderService.getOrdersByCustomers(customerAuthEntity.getCustomer().getUuid());
         ArrayList<Long> orderids = new ArrayList<>();
         for (OrdersEntity order : orders) {
             orderids.add(order.getId());
         }
-        List<OrderItemEntity> orderItemEntity = orderBusinessService.getPastOrders(orderids);
+        List<OrderItemEntity> orderItemEntity = orderService.getPastOrders(orderids);
 
         List<OrderList> orderList = new ArrayList<OrderList>();
 
@@ -95,8 +111,12 @@ public class OrderController {
             for (OrderItemEntity orderItemEntity1 : orderItemEntity) {
 
                 if (order.getId() == orderItemEntity1.getOrders().getId()) {
+
                     ItemQuantityResponseItem itemQuantityResponseItem = new ItemQuantityResponseItem().id(UUID.fromString(orderItemEntity1.getItem().getUuid())).itemName(orderItemEntity1.getItem().getItemName()).itemPrice(orderItemEntity1.getItem().getPrice());
                     ItemQuantityResponse itemQuantityResponse = new ItemQuantityResponse().item(itemQuantityResponseItem).quantity(orderItemEntity1.getQuantity()).price(orderItemEntity1.getPrice());
+                    String item = orderItemEntity1.getItem().getType().getValue();
+
+                    itemQuantityResponse.getItem().setType(ItemQuantityResponseItem.TypeEnum.valueOf(item));
                     itemQuantityResponsesList.add(itemQuantityResponse);
                 }
             }
@@ -110,48 +130,58 @@ public class OrderController {
     }
 
     @RequestMapping(method = RequestMethod.POST, path = "/order", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<SaveOrderResponse> saveOrder(@RequestHeader("access-token") String access_token, SaveOrderRequest saveOrderRequest) throws AuthorizationFailedException, CouponNotFoundException, AddressNotFoundException, PaymentMethodNotFoundException, RestaurantNotFoundException, ItemNotFoundException {
+    public ResponseEntity<SaveOrderResponse> saveOrder(@RequestHeader("authorization") final String authorization, SaveOrderRequest saveOrderRequest) throws AuthorizationFailedException, CouponNotFoundException, AddressNotFoundException, PaymentMethodNotFoundException, RestaurantNotFoundException, ItemNotFoundException, AuthenticationFailedException {
+
+        final BearerAuthDecoder authDecoder = new BearerAuthDecoder(authorization);
+        String accessToken = authDecoder.getAccessToken();
+        CustomerAuthEntity customerAuthEntity = customerAuthService.getCustomerByToken(accessToken);
+        Boolean isAuthorizedUser = customerAuthService.isAuthorizedUser(accessToken,customerAuthEntity);
 
 
-        CustomerAuthEntity customerAuthEntity = couponBusinessService.getCustomerByAccessToken(access_token);
-
-        if (customerAuthEntity == null) {
+        if (!isAuthorizedUser) {
             throw new AuthorizationFailedException("ATHR-001", "Customer is not Logged in");
         }
         if (customerAuthEntity.getLogoutAt() != null) {
             throw new AuthorizationFailedException("ATHR-002", "Customer is logged out. Log in again to access this endpoint");
         }
-        if (customerAuthEntity.getExpiresAt() != null) {
+        if (customerAuthEntity.getExpiresAt().isBefore(ZonedDateTime.now())) {
             throw new AuthorizationFailedException("ATHR-003", "Your session is expired. Log in again to access this endpoint");
         }
         CouponEntity couponEntity = null;
         if (saveOrderRequest.getCouponId() != null) {
             String CouponId = saveOrderRequest.getCouponId().toString();
 
-            couponEntity = couponBusinessService.getCouponByUUID(CouponId);
+            couponEntity = orderService.getCouponByCouponId(CouponId);
 
             if (couponEntity == null) {
                 throw new CouponNotFoundException("CPF-002", "No coupon by this id");
             }
 
         }
-        AddressEntity addressEntity = null;
-        if (saveOrderRequest.getAddressId() != null) {
-            addressEntity = orderBusinessService.getAddressByUUID(saveOrderRequest.getAddressId());
-            if (addressEntity == null) {
-                throw new AddressNotFoundException("ANF-003", "No address by this id");
-            }
+
+        AddressEntity addressEntity = addressService.getAddressByUUID(saveOrderRequest.getAddressId());
+
+        if (addressEntity == null) {
+            throw new AddressNotFoundException("ANF-003", "No address by this id.");
         }
+
+
+        CustomerAddressEntity customerAddressEntity = addressService.getCustomerAddress(customerAuthEntity.getCustomer(), addressEntity);
+
+        if (customerAddressEntity == null) {
+            throw new AuthorizationFailedException("ATHR-004", "You are not authorized to view/update/delete any one else's address");
+        }
+
         PaymentEntity paymentEntity = null;
         if (saveOrderRequest.getPaymentId() != null) {
-            paymentEntity = orderBusinessService.getPaymentByUUID(saveOrderRequest.getPaymentId().toString());
+            paymentEntity = paymentService.getPaymentByUUID(saveOrderRequest.getPaymentId().toString());
             if (paymentEntity == null) {
                 throw new PaymentMethodNotFoundException("PNF-002", "No payment method found by this id");
             }
         }
         RestaurantEntity restaurantEntity = null;
         if (saveOrderRequest.getPaymentId() != null) {
-            restaurantEntity = orderBusinessService.getRestaurantByUUID(saveOrderRequest.getRestaurantId().toString());
+            restaurantEntity = orderService.getRestaurantByUUID(saveOrderRequest.getRestaurantId().toString());
             if (restaurantEntity == null) {
                 throw new RestaurantNotFoundException("RNF-001", "No restaurant by this id");
             }
@@ -168,13 +198,13 @@ public class OrderController {
         ordersEntity.setRestaurant(restaurantEntity);
         ordersEntity.setDate(ZonedDateTime.now());
         ordersEntity.setUuid(UUID.randomUUID().toString());
-        ordersEntity = orderBusinessService.saveOrder(ordersEntity);
+        ordersEntity = orderService.saveOrder(ordersEntity);
 
         Boolean isSaved = false;
         if (saveOrderRequest.getItemQuantities() != null) {
             List<ItemQuantity> itemQuantityList = saveOrderRequest.getItemQuantities();
 
-            ItemEntity itemEntity = orderBusinessService.getItemByuuid(itemQuantityList.get(0).getItemId().toString());
+            ItemEntity itemEntity = orderService.getItemByuuid(itemQuantityList.get(0).getItemId().toString());
             if (itemEntity == null) {
                 throw new ItemNotFoundException("INF-003", "No item by this id exist");
             }
@@ -184,12 +214,12 @@ public class OrderController {
             orderItemEntity.setOrders(ordersEntity);
             orderItemEntity.setQuantity(itemQuantityList.get(0).getQuantity());
             orderItemEntity.setPrice(itemQuantityList.get(0).getPrice());
-            isSaved = orderBusinessService.saveOrderItem(orderItemEntity);
+            orderItemEntity = orderService.saveOrderItem(orderItemEntity);
 
         }
 
 
-        if (isSaved) {
+        if (ordersEntity != null) {
             SaveOrderResponse saveOrderResponse = new SaveOrderResponse().id(ordersEntity.getUuid()).status("ORDER SUCCESSFULLY PLACED");
             return new ResponseEntity<>(saveOrderResponse, HttpStatus.OK);
         }

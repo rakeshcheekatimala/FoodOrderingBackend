@@ -13,7 +13,7 @@ public class CouponBusinessService {
     @Autowired
     CouponDao couponDao;
 
-    public CouponEntity getCouponByName(String couponName) {
+    public CouponEntity getCouponByCouponName(String couponName) {
         return couponDao.getCouponByName(couponName);
     }
 

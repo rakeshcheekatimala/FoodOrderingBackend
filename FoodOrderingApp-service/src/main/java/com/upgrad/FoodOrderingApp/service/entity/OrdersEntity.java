@@ -7,13 +7,14 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity
 @Table(name = "orders")
 @NamedQueries({
         @NamedQuery(name = "OrdersEntity.getAllOrdersByRestaurantId", query = "SELECT o from OrdersEntity o where o.restaurant.uuid = :restaurantUUID"),
-        @NamedQuery(name="getOrders", query="Select o from OrdersEntity o where o.customer.id=:custid")
+        @NamedQuery(name="getOrders", query="Select o from OrdersEntity o where o.customer.uuid=:custid")
 })
 public class OrdersEntity implements Serializable {
 
@@ -56,6 +57,9 @@ public class OrdersEntity implements Serializable {
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
     private RestaurantEntity restaurant;
+   public OrdersEntity(){}
+    public OrdersEntity(String orderId, double v, CouponEntity couponEntity, double v1, Date orderDate, PaymentEntity paymentEntity, CustomerEntity customerEntity, AddressEntity addressEntity, RestaurantEntity restaurantEntity) {
+    }
 
     public long getId() {
         return id;

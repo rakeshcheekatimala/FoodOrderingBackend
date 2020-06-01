@@ -1,5 +1,6 @@
 package com.upgrad.FoodOrderingApp.service.businness;
 
+import com.upgrad.FoodOrderingApp.service.dao.CouponDao;
 import com.upgrad.FoodOrderingApp.service.dao.OrderDao;
 import com.upgrad.FoodOrderingApp.service.dao.PaymentDao;
 import com.upgrad.FoodOrderingApp.service.entity.*;
@@ -12,10 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class OrderBusinessService {
+public class OrderService {
 
     @Autowired
     OrderDao orderDao;
+    @Autowired
+    CouponDao couponDao;
 
     @Autowired
     PaymentDao paymentDao;
@@ -24,7 +27,7 @@ public class OrderBusinessService {
         return orderDao.getOrderDetails(ordersid);
     }
 
-    public List<OrdersEntity> getOrders(int id) {
+    public List<OrdersEntity> getOrdersByCustomers(String id) {
         return orderDao.getOrders(id);
     }
 
@@ -32,16 +35,14 @@ public class OrderBusinessService {
         return orderDao.getAddressByUUID(uuid);
     }
 
-    public PaymentEntity getPaymentByUUID(String uuid) {
-        return paymentDao.getPaymentByUUID(uuid);
-    }
+
 
     public RestaurantEntity getRestaurantByUUID(String uuid) {
         return orderDao.getRestaurantByUUID(uuid);
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public Boolean saveOrderItem(OrderItemEntity orderItemEntity) {
+    public OrderItemEntity saveOrderItem(OrderItemEntity orderItemEntity) {
         return orderDao.saveOrderItem(orderItemEntity);
     }
 
@@ -54,4 +55,12 @@ public class OrderBusinessService {
     public ItemEntity getItemByuuid(String uuid) {
         return orderDao.getItemByuuid(uuid);
     }
+
+    public CouponEntity getCouponByCouponId(String uuid) {
+        return couponDao.getCouponByUUID(uuid);
+    }
+    public CouponEntity getCouponByCouponName(String couponName) {
+        return couponDao.getCouponByName(couponName);
+    }
+
 }
