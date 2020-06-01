@@ -9,6 +9,9 @@ import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "orders")
+@NamedQueries({
+        @NamedQuery(name = "OrdersEntity.getAllOrdersByRestaurantId", query = "SELECT o from OrdersEntity o where o.restaurant.uuid = :restaurantUUID")
+})
 public class OrdersEntity implements Serializable {
 
     @Id
