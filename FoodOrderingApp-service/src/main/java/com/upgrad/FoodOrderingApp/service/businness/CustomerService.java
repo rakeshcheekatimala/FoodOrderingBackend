@@ -43,7 +43,7 @@ public class CustomerService {
         CustomerEntity customerEntity = customerDao.getCustomerByContact(contactNumber); // get customer using contactNumber
 
         // verify the customerEntity has a result, if the value is null throw AuthenticationFailedException
-        if (customerEntity == null) {
+        if(customerEntity==null) {
             throw new AuthenticationFailedException("ATH-001", "This contact number has not been registered!");
         }
 
@@ -52,24 +52,30 @@ public class CustomerService {
 
         String salt = customerEntity.getSalt(); // get the salt for this customer
         String hashedPassword = customerEntity.getPassword(); // get the hashedPassword
-        final String encryptedPassword = PasswordCryptographyProvider.encrypt(password, salt); // generate the encryptedPassword using salt & original passowrd
+        final String encryptedPassword = cryptographyProvider.encrypt(password,salt); // generate the encryptedPassword using salt & original passowrd
 
-        if (encryptedPassword.equals(hashedPassword)) {
+        if(encryptedPassword.equals(hashedPassword)){
             final ZonedDateTime now = ZonedDateTime.now();
             final JwtTokenProvider tokenProvider = new JwtTokenProvider(customerEntity.getPassword());
             final ZonedDateTime expiresAt = now.plusHours(8);
             final String authToken = tokenProvider.generateToken(customerEntity.getUuid(), now, expiresAt);
             final CustomerAuthEntity authTokenEntity = new CustomerAuthEntity();
-
             authTokenEntity.setAccessToken(authToken);
             authTokenEntity.setLoginAt(now);
             authTokenEntity.setExpiresAt(expiresAt);
             authTokenEntity.setUuid(customerEntity.getUuid());
-            authTokenEntity.setCustomer(customerEntity);
-            customerDao.createAuthToken(authTokenEntity);
-
+            authTokenEntity.setCustomer(customerEntity); // setting the customer
+            CustomerAuthEntity isExisting = customerAuthDao.getCustomerById(customerEntity.getId());
+            if(isExisting==null){
+                customerDao.createAuthToken(authTokenEntity); // create new auth token if it is does not exist
+            }
+            else{
+                authTokenEntity.setId(isExisting.getId());
+                customerDao.updateAuthToken(authTokenEntity); // update  auth token if it is existing
+            }
             return authTokenEntity;
-        } else {
+        }
+        else {
             throw new AuthenticationFailedException("ATH-002", "Invalid Credentials");
         }
     }
@@ -113,8 +119,8 @@ public class CustomerService {
     }
 
     /* This method is to updateCustomer the customer using customerEntity and return the CustomerEntity .
-      If error throws exception with error code and error message.
-      */
+       If error throws exception with error code and error message.
+    */
     @Transactional
     public CustomerEntity updateCustomer(CustomerEntity customerEntity) throws UpdateCustomerException {
 
@@ -132,8 +138,9 @@ public class CustomerService {
 
 
     /* This method is to updateCustomerPassword the customer using oldPassword,newPassword & customerEntity and return the CustomerEntity .
-     If error throws exception with error code and error message.
+        If error throws exception with error code and error message.
      */
+
     @Transactional
     public CustomerEntity updateCustomerPassword(String oldPassword, String newPassword, CustomerEntity customerEntity) throws UpdateCustomerException {
 
@@ -163,8 +170,9 @@ public class CustomerService {
     }
 
     /* This method is to getCustomer using accessToken and return the CustomerEntity .
-If error throws exception with error code and error message.
-*/
+        If error throws exception with error code and error message.
+    */
+
     public CustomerEntity getCustomer(String accessToken) throws AuthorizationFailedException {
         CustomerAuthEntity customerAuthEntity = customerAuthDao.getCustomerAuthByAccessToken(accessToken);
 
@@ -182,6 +190,11 @@ If error throws exception with error code and error message.
             throw new AuthorizationFailedException("ATHR-003", "Your session is expired. Log in again to access this endpoint.");
         }
         return customerAuthEntity.getCustomer();
+
+    }
+
+    public CustomerAuthEntity logout(CustomerAuthEntity customerAuthEntity){
+        return  customerDao.logout(customerAuthEntity);
     }
 
 }

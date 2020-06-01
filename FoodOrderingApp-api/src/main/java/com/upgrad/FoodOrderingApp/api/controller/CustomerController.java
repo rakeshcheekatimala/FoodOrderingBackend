@@ -2,10 +2,15 @@ package com.upgrad.FoodOrderingApp.api.controller;
 
 
 import com.upgrad.FoodOrderingApp.api.controller.provider.BasicAuthDecoder;
+import com.upgrad.FoodOrderingApp.api.controller.provider.BearerAuthDecoder;
 import com.upgrad.FoodOrderingApp.api.controller.transformer.CustomerTransformer;
 import com.upgrad.FoodOrderingApp.api.model.*;
+
+
 import com.upgrad.FoodOrderingApp.service.businness.CustomerService;
 import com.upgrad.FoodOrderingApp.service.common.UtilityProvider;
+
+import com.upgrad.FoodOrderingApp.service.businness.CustomerAuthService;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerAuthEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import com.upgrad.FoodOrderingApp.service.exception.AuthenticationFailedException;
@@ -18,6 +23,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +37,9 @@ public class CustomerController {
     CustomerService customerService;
 
     @Autowired
+    CustomerAuthService customerAuthService;
+
+    @Autowired
     UtilityProvider utilityProvider; // It Provides Data Check methods for various cases
 
     @RequestMapping(method = RequestMethod.POST, path = "/customer/login", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -40,20 +49,37 @@ public class CustomerController {
         // authenticate service method needs contactNumber & password
         // if both matches they would set the token and send the entity back
 
-        CustomerAuthEntity customerAuthEntity = customerService.authenticate(basicAuthDecoder.getContactNumber(), basicAuthDecoder.getPassword());
-        if (customerAuthEntity != null) {
+        CustomerAuthEntity customerAuthEntity = customerService.authenticate(basicAuthDecoder.getContactNumber(),basicAuthDecoder.getPassword());
+        if(customerAuthEntity!=null){
             HttpHeaders headers = new HttpHeaders();
             headers.add("access-token", customerAuthEntity.getAccessToken());
             headers.add("access-control-expose-headers", "access-token");
 
-            if (StringUtils.isEmpty(authorization)) {
+            if(StringUtils.isEmpty(authorization)) {
                 throw new AuthenticationFailedException("ATH-003", "Incorrect format of decoded customer name and password");
             }
             LoginResponse loginResponse = CustomerTransformer.toLoginResponse(customerAuthEntity.getCustomer());
             return new ResponseEntity<LoginResponse>(loginResponse, headers, HttpStatus.OK);
-        } else {
+        }
+        else {
             throw new AuthenticationFailedException("ATH-001", "This contact number has not been registered!");
         }
+    }
+
+    @RequestMapping(method= RequestMethod.POST, path="/customer/logout", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<LogoutResponse> logout(@RequestHeader("authorization") final String authorization)
+            throws AuthorizationFailedException, AuthenticationFailedException {
+
+        // authDecoder splits the authorization to extract the token
+        final BearerAuthDecoder authDecoder = new BearerAuthDecoder(authorization);
+        String accessToken = authDecoder.getAccessToken();
+        CustomerAuthEntity customerAuthEntity = customerAuthService.getCustomerByToken(accessToken);
+
+        final CustomerAuthEntity logoutEntity = customerService.logout(customerAuthEntity);
+        LogoutResponse logoutResponse = CustomerTransformer.toLogoutResponse(logoutEntity.getCustomer());
+            // Returns the LogoutResponse with OK http status
+        return new ResponseEntity<LogoutResponse>(logoutResponse, HttpStatus.OK);
+        // Calls the logout method by passing the bearer token
     }
 
 
@@ -81,7 +107,7 @@ public class CustomerController {
     }
 
     /* This method handles the customer details update request. Takes the request as UpdateCustomerRequest and produces UpdateCustomerResponse containing the details of the updated Customer.
-    If error returns the error code with corresponding Message.
+       If error returns the error code with corresponding Message.
      */
     @CrossOrigin
     @RequestMapping(method = RequestMethod.PUT, path = "/customer", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -114,7 +140,7 @@ public class CustomerController {
     }
 
     /* This method is used to update password of the customer.It takes updatePasswordRequest and produces updatePasswordResponse containing UUID and the successful message.
-    If error returns the error code with corresponding Message.
+       If error returns the error code with corresponding Message.
      */
     @CrossOrigin
     @RequestMapping(method = RequestMethod.PUT, path = "/customer/password", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
